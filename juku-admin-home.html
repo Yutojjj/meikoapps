@@ -205,6 +205,7 @@
     .date-nav > button:not(.date-label):hover { background: #e2f1f4; }
     .date-label { width: 100%; min-width: 0; height: 48px; padding: 0 18px; border: 1px solid #a7cfda; border-radius: 14px; text-align: center; white-space: nowrap; font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; background: #fff; color: #345d6b; cursor: pointer; }
     .date-label:hover { background: #e2f1f4; }
+    #monthlyView .date-nav { padding-right:0; }
     .date-nav > button.daily-quiz-print { position:absolute; top:5px; right:0; display:grid; place-items:center; width:42px; height:42px; padding:0; border:1px solid #0b83c5; border-radius:50%; color:#0b83c5; background:#fff; cursor:pointer; font-size:0; }
     .daily-quiz-print::before { content:none !important; }.daily-quiz-print:hover { color:#fff; background:#0b83c5; }.daily-quiz-print svg { width:20px; height:20px; }
     .date-picker-hidden { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
@@ -675,6 +676,7 @@
       .page-head { display: block; }
       .page-head { margin-bottom: 10px; }
       .date-nav { margin-top: 6px; width:100%; grid-template-columns:42px minmax(0, 1fr) 42px; gap: 6px; padding-right:46px; }
+      #monthlyView .date-nav { padding-right:0; grid-template-columns:42px minmax(0, 1fr) 42px; }
       .date-nav > button:not(.date-label) { width: 48px; height: 48px; }
       .date-nav > button:not(.date-label)::before { top: 17px; width: 12px; height: 12px; }
       #prevDay::before { left: 18px; }
@@ -704,8 +706,8 @@
       .shift-week div { padding: 7px 2px; font-size: 11px; }
       .shift-cell { min-height: 0; padding: 4px 0; }
       .shift-date { font-size: 12px; }
-      .shift-cell-top { display:block; margin:0 3px 3px; }
-      .shift-cell-top small { display:block; margin-top:2px; font-size:9px; line-height:1.1; white-space:nowrap; }
+      .shift-cell-top { display:flex; align-items:flex-start; justify-content:space-between; gap:2px; margin:0 3px 3px; }
+      .shift-cell-top small { display:block; margin-top:0; font-size:9px; line-height:1.1; white-space:nowrap; }
       .shift-entry { margin-top: 0; padding: 4px 3px; font-size: 9px; }
       .shift-entry small { font-size: 8px; }
       .shift-entry { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:2px; padding:3px 1px; font-size:8px; line-height:1.1; }
@@ -781,6 +783,20 @@
       .topbar.shift-mode .header-print { width:34px; height:34px; }
       .topbar.shift-mode .header-auto { min-width:68px; padding:8px 7px; }
       .topbar.shift-mode .header-status { min-width:82px; padding:8px 7px; }
+      .shift-month-nav { min-height:66px; padding:10px 50px 10px 8px; }
+      .shift-month-controls { width:100%; gap:6px; }
+      .shift-month-nav .shift-month-controls > button:not(.shift-clear-month) { width:40px; height:40px; flex-basis:40px; }
+      .shift-month-label { min-width:0; flex:1 1 auto; gap:4px; }
+      .shift-month-label span { padding:7px 8px; font-size:15px; }
+      .shift-month-nav .shift-clear-month { right:7px; width:38px; height:38px; }
+      .shift-month-nav .shift-clear-month svg { width:18px; height:18px; }
+    }
+    @media (max-width:380px) {
+      .shift-month-nav { padding-right:46px; }
+      .shift-month-controls { gap:4px; }
+      .shift-month-nav .shift-month-controls > button:not(.shift-clear-month) { width:36px; height:36px; flex-basis:36px; }
+      .shift-month-label span { padding:6px 5px; font-size:14px; }
+      .shift-month-nav .shift-clear-month { right:5px; width:36px; height:36px; }
     }
   </style>
 </head>
@@ -1555,7 +1571,7 @@
       const holidays = { '2026-09-21': '敬老の日', '2026-09-22': '秋分の日' };
       $('shiftMonthLabel').innerHTML = `<span>${year}年</span><span>${month + 1}月</span>`;
       const first = new Date(year, month, 1).getDay(); const total = new Date(year, month + 1, 0).getDate();
-      $('shiftGrid').innerHTML = `${Array(first).fill('<div class="shift-cell empty"></div>').join('')}${Array.from({length: total}, (_, i) => { const day = i + 1; const date = new Date(year, month, day); const dayOfWeek = date.getDay(); const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`; const holiday = holidays[dateStr]; const lessonSlots = slotsForDate(date); const cellClass = holiday ? 'holiday' : dayOfWeek === 0 ? 'sunday' : dayOfWeek === 6 ? 'saturday' : ''; return `<div class="shift-cell ${cellClass}" data-shift-date="${dateStr}"><div class="shift-cell-top"><span class="shift-date">${day}${holiday ? `<span class="shift-holiday-name">${holiday}</span>` : ''}</span><small>${lessonSlots.length ? `授業 ${lessonSlots.join('')}` : '休み'}</small></div></div>`; }).join('')}`;
+      $('shiftGrid').innerHTML = `${Array(first).fill('<div class="shift-cell empty"></div>').join('')}${Array.from({length: total}, (_, i) => { const day = i + 1; const date = new Date(year, month, day); const dayOfWeek = date.getDay(); const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`; const holiday = holidays[dateStr]; const lessonSlots = slotsForDate(date); const cellClass = holiday ? 'holiday' : dayOfWeek === 0 ? 'sunday' : dayOfWeek === 6 ? 'saturday' : ''; return `<div class="shift-cell ${cellClass}" data-shift-date="${dateStr}"><div class="shift-cell-top"><span class="shift-date">${day}${holiday ? `<span class="shift-holiday-name">${holiday}</span>` : ''}</span><small>${lessonSlots.length ? lessonSlots.join('') : '休み'}</small></div></div>`; }).join('')}`;
       const trailingCells = (7 - ($('shiftGrid').children.length % 7)) % 7;
       for (let index = 0; index < trailingCells; index += 1) $('shiftGrid').insertAdjacentHTML('beforeend', '<div class="shift-cell empty"></div>');
       $('shiftGrid').querySelectorAll('.shift-entry small').forEach(label => { label.textContent = label.textContent.replace('コマ', ''); });
