@@ -173,8 +173,9 @@
     .shift-print-table th.holiday, .shift-print-table td.holiday { color:#c8323d; background:#fff0f1; }
     .shift-print-date { display:flex; justify-content:space-between; margin-bottom:2.5mm; font-weight:900; }
     .shift-print-staff { display:grid; gap:1.5mm; font-weight:800; line-height:1.35; }
-    .shift-print-member { display:flex; align-items:center; justify-content:space-between; gap:3mm; padding:1.4mm 2mm; color:#fff; background:var(--member-color,#5b9eb5); font-size:8.5pt; font-weight:900; }
-    .shift-print-member span { font-size:8pt; letter-spacing:.08em; }
+    .shift-print-member { display:flex; align-items:center; justify-content:space-between; gap:3mm; padding:1.4mm 2mm; color:#fff; background:var(--member-color,#5b9eb5); font-size:8.5pt; font-weight:900; white-space:nowrap; }
+    .shift-print-member strong { flex:0 0 auto; white-space:nowrap; }
+    .shift-print-member span { flex:0 0 auto; font-size:8pt; letter-spacing:.08em; white-space:nowrap; }
     .shift-print-empty { color:#9aaab2; font-size:8pt; font-weight:800; }
 
     .layout { display: grid; grid-template-columns: 1fr; min-height: calc(100vh - 68px); }
@@ -1539,7 +1540,7 @@
       const holidays = { '2026-09-21': '敬老の日', '2026-09-22': '秋分の日' };
       const cells = Array.from({ length:total }, (_, index) => {
         const day = index + 1; const date = new Date(year, month, day); const key = dateKeyFor(date); const holiday = holidays[key]; const staff = (shiftAssignments[key] || []).filter(item => registeredStaffNames().includes(item.teacher));
-        const members = staff.length ? staff.map(item => `<div class="shift-print-member" style="--member-color:${teacherColor(item.teacher)}"><strong>${item.teacher}</strong><span>${(item.slots || []).filter(Boolean).join('')}</span></div>`).join('') : '<span class="shift-print-empty">―</span>';
+        const members = staff.length ? staff.map(item => `<div class="shift-print-member" style="--member-color:${teacherColor(item.teacher)};background:${teacherColor(item.teacher)}"><strong>${item.teacher}</strong><span>${(item.slots || []).filter(Boolean).join('')}</span></div>`).join('') : '<span class="shift-print-empty">―</span>';
         const cellClass = holiday ? 'holiday' : date.getDay() === 0 ? 'sun' : date.getDay() === 6 ? 'sat' : '';
         return `<td class="${cellClass}"><div class="shift-print-date"><span>${day}（${weekdays[date.getDay()]}）</span></div><div class="shift-print-staff">${members}</div></td>`;
       });
