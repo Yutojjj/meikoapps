@@ -162,21 +162,21 @@
     .auto-fill-day-row > label { grid-column:2; display:flex; align-items:center; justify-content:space-between; gap:8px; }
     @media (max-width:680px) { #autoFillSettings { grid-template-columns:1fr; } }
 
-    .shift-print-sheet { box-sizing:border-box; width:297mm; min-height:210mm; margin:auto; padding:14mm 13mm; color:#17283a; background:#fff; font-family:"Noto Sans JP",Meiryo,sans-serif; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .shift-print-title { display:flex; justify-content:space-between; align-items:end; padding-bottom:5mm; border-bottom:2px solid #17283a; }
-    .shift-print-title h1 { margin:0; font-size:22pt; } .shift-print-title span { font-size:13pt; font-weight:800; }
-    .shift-print-table { width:100%; margin-top:7mm; border-collapse:collapse; table-layout:fixed; font-size:10pt; }
-    .shift-print-table th, .shift-print-table td { min-height:23mm; padding:2mm 1.5mm; border:1px solid #80909a; vertical-align:top; text-align:left; overflow:hidden; }
+    .shift-print-sheet { box-sizing:border-box; width:297mm; min-height:210mm; margin:auto; padding:7mm 8mm; color:#17283a; background:#fff; font-family:"Noto Sans JP",Meiryo,sans-serif; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .shift-print-title { display:flex; justify-content:flex-end; align-items:end; padding-bottom:2mm; border-bottom:2px solid #17283a; }
+    .shift-print-title span { font-size:14pt; font-weight:900; }
+    .shift-print-table { width:100%; margin-top:3mm; border-collapse:collapse; table-layout:fixed; font-size:11pt; }
+    .shift-print-table th, .shift-print-table td { min-height:23mm; padding:2mm 0; border:1px solid #80909a; vertical-align:top; text-align:left; overflow:hidden; }
     .shift-print-table th { min-height:0; padding:2mm; text-align:center; background:#e6e6e6; }
     .shift-print-table th.sun, .shift-print-table td.sun { color:#c8323d; background:#fff0f1; }
     .shift-print-table th.sat, .shift-print-table td.sat { color:#146bc0; background:#edf6ff; }
     .shift-print-table th.holiday, .shift-print-table td.holiday { color:#c8323d; background:#fff0f1; }
-    .shift-print-date { display:flex; justify-content:space-between; margin-bottom:1.5mm; font-weight:900; }
+    .shift-print-date { display:flex; justify-content:flex-start; margin:0 1.5mm 1.5mm; font-weight:900; }
     .shift-print-staff { display:grid; gap:0; width:100%; margin:0; font-weight:800; line-height:1.15; }
-    .shift-print-member { display:flex; align-items:center; justify-content:space-between; gap:2mm; width:100%; min-width:0; box-sizing:border-box; padding:1.1mm 1.5mm; color:#fff; background-color:var(--member-color,#5b9eb5); font-size:8pt; font-weight:900; line-height:1.1; white-space:nowrap; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .shift-print-member { display:flex; align-items:center; justify-content:space-between; gap:2mm; width:100%; min-width:0; box-sizing:border-box; padding:1.1mm 1.5mm; color:#fff; background-color:var(--member-color,#5b9eb5); font-size:9pt; font-weight:900; line-height:1.1; white-space:nowrap; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     .shift-print-member strong { flex:0 0 auto; white-space:nowrap; }
     .shift-print-member span { flex:0 0 auto; font-size:8pt; letter-spacing:.08em; white-space:nowrap; }
-    .shift-print-empty { color:#9aaab2; font-size:8pt; font-weight:800; }
+    .shift-print-empty { display:block; margin:0 1.5mm; color:#9aaab2; font-size:8pt; font-weight:800; }
 
     .layout { display: grid; grid-template-columns: 1fr; min-height: calc(100vh - 68px); }
     nav { display: none; }
@@ -573,7 +573,7 @@
     .equation-system-lines { display:flex; flex-direction:column; gap:3px; line-height:1.15; }
     @media print { .math-fraction { color:#000; } }
     @media print {
-      @page { size:A4; margin:0; }
+      @page { size:A4 landscape; margin:0; }
       body > * { display:none !important; }
       /* 画面内のプレビューは印刷せず、#printRoot に複製した一部だけを印刷する。 */
       #quizPrintModal { display:none !important; }
@@ -583,7 +583,7 @@
       .quiz-print-sheet { box-sizing:border-box !important; width:auto !important; min-height:0 !important; margin:0 !important; padding:0 !important; box-shadow:none !important; }
       .quiz-print-page { box-sizing:border-box !important; width:210mm !important; height:297mm !important; min-height:0 !important; margin:0 !important; padding:18mm 17mm !important; }.quiz-print-page + .quiz-print-page { margin:0 !important; border:0 !important; break-before:page; page-break-before:always; }
       #printRoot, .shift-print-sheet, .shift-print-member { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      .shift-print-sheet { width:297mm !important; min-height:210mm !important; margin:0 !important; box-shadow:none !important; }
+      .shift-print-sheet { width:297mm !important; min-height:210mm !important; margin:0 !important; padding:7mm 8mm !important; box-shadow:none !important; }
     }
     .monthly-calendar { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); border:1px solid var(--line); background:#fff; }
     .monthly-weekday { padding:10px 4px; border-right:1px solid var(--line); border-bottom:1px solid var(--line); text-align:center; font-weight:900; background:#f7fafb; }
@@ -616,9 +616,10 @@
     .print-icon-button { width:48px; padding:10px 0; font-size:20px; }
     .print-icon-button svg { width:22px; height:22px; display:block; margin:auto; }
     .shift-calendar { width:100%; max-width:100%; min-width:0; border:0; background:#fffdf7; overflow:hidden; }
-    .shift-month-nav { display:flex; align-items:center; justify-content:center; gap:16px; padding:14px; border-bottom:1px solid var(--line); }
+    .shift-month-nav { position:relative; display:flex; align-items:center; justify-content:center; min-height:72px; padding:14px 70px; border-bottom:1px solid var(--line); }
+    .shift-month-controls { display:flex; align-items:center; justify-content:center; gap:16px; }
     .shift-month-nav button { width:44px; height:44px; flex:0 0 44px; display:flex; align-items:center; justify-content:center; box-sizing:border-box; padding:0 0 3px; border:1px solid #9dd7e4; border-radius:50%; color:#587082; background:#fff; cursor:pointer; font-family:Arial,sans-serif; font-size:30px; line-height:1; }
-    .shift-month-nav .shift-clear-month { width:42px; height:42px; margin-left:auto; padding:0; border:1px solid #e58d96; color:#c94f58; font-size:19px; }
+    .shift-month-nav .shift-clear-month { position:absolute; right:14px; top:50%; transform:translateY(-50%); width:42px; height:42px; padding:0; border:1px solid #e58d96; color:#c94f58; font-size:19px; }
     .shift-month-nav .shift-clear-month:hover { color:#fff; background:#d45d67; }
     .shift-month-nav .shift-clear-month svg { width:20px; height:20px; }
     .shift-month-label { display:flex; gap:10px; align-items:center; min-width:190px; justify-content:center; text-align:center; font-size:18px; font-weight:900; }
@@ -792,7 +793,7 @@
       </section>
       <section id="shiftView" class="shift-view view-hidden" aria-label="シフト確認">
         <div class="shift-toolbar"></div>
-        <div class="shift-calendar"><div class="shift-month-nav"><button id="shiftPrevMonth" type="button">‹</button><div class="shift-month-label" id="shiftMonthLabel"></div><button id="shiftNextMonth" type="button">›</button><button id="clearShiftMonth" class="shift-clear-month" type="button" aria-label="この月のシフトをすべて削除"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l-1 14H6L5 7zm3 3v8m4-8v8m4-8v8M4 4h5l1-2h6l1 2h4v2H4V4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div><div class="shift-week"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div><div class="shift-days" id="shiftGrid"></div></div>
+        <div class="shift-calendar"><div class="shift-month-nav"><div class="shift-month-controls"><button id="shiftPrevMonth" type="button">‹</button><div class="shift-month-label" id="shiftMonthLabel"></div><button id="shiftNextMonth" type="button">›</button></div><button id="clearShiftMonth" class="shift-clear-month" type="button" aria-label="この月のシフトをすべて削除"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l-1 14H6L5 7zm3 3v8m4-8v8m4-8v8M4 4h5l1-2h6l1 2h4v2H4V4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div><div class="shift-week"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div><div class="shift-days" id="shiftGrid"></div></div>
       </section>
       <section id="quizView" class="quiz-view view-hidden" aria-label="問題バンク"><div class="quiz-library-head"><div><h2>問題バンク</h2><p id="quizLibraryLabel">中1・数学　レベル1</p></div><div class="quiz-filters"><select id="quizGradeSelect" aria-label="学年"></select><select id="quizLevelSelect" aria-label="レベル"></select></div></div><div id="quizSectionList"></div></section>
       <section id="otherView" class="other-view view-hidden" aria-label="その他"><div class="other-menu"><button type="button" class="other-menu-card" id="openQuizLibrary"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h7a3 3 0 0 1 3 3v10H7a3 3 0 0 0-3 3zM20 5.5h-7a3 3 0 0 0-3 3v10h7a3 3 0 0 1 3 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span><strong>問題</strong><small>問題バンク・印刷</small></button><button type="button" class="other-menu-card" id="openAccountManagement"><span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 21c.7-4.5 3-7 7-7s6.3 2.5 7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><strong>アカウント管理</strong><small>生徒・アルバイトの登録と編集</small></button><button type="button" class="other-menu-card" id="openLongBreaks"><span>☀</span><strong>長期休み</strong><small>夏期・冬期などの特別授業</small></button><button type="button" class="other-menu-card" id="openSubjectSettings"><span>◫</span><strong>科目</strong><small>学年別の科目・映像授業を設定</small></button><button type="button" class="other-menu-card" id="openLogout"><span>↪</span><strong>ログアウト</strong><small>管理画面からサインアウト</small></button></div></section>
@@ -1337,7 +1338,6 @@
           localStorage.setItem('jukuShiftAssignments', JSON.stringify(shiftAssignments));
         }
         render(); renderMonthly(); renderAccounts(); renderShifts(); renderQuizBank();
-        showToast('Firebaseのデータを読み込みました');
       } catch (error) {
         console.error('Firebase data load failed', error);
         showToast(`Firebase読み込み失敗（${error?.code || 'unknown'}）`);
@@ -1543,11 +1543,11 @@
         const day = index + 1; const date = new Date(year, month, day); const key = dateKeyFor(date); const holiday = holidays[key]; const staff = (shiftAssignments[key] || []).filter(item => registeredStaffNames().includes(item.teacher));
         const members = staff.length ? staff.map(item => { const color = teacherColor(item.teacher); return `<div class="shift-print-member" style="--member-color:${color};background-color:${color}"><strong>${item.teacher}</strong><span>${(item.slots || []).filter(Boolean).join('')}</span></div>`; }).join('') : '<span class="shift-print-empty">―</span>';
         const cellClass = holiday ? 'holiday' : date.getDay() === 0 ? 'sun' : date.getDay() === 6 ? 'sat' : '';
-        return `<td class="${cellClass}"><div class="shift-print-date"><span>${day}（${weekdays[date.getDay()]}）</span></div><div class="shift-print-staff">${members}</div></td>`;
+        return `<td class="${cellClass}"><div class="shift-print-date"><span>${day}</span></div><div class="shift-print-staff">${members}</div></td>`;
       });
       const cellsByWeek = Array(first).fill('<td></td>').concat(cells);
       const padded = cellsByWeek.concat(Array((7 - cellsByWeek.length % 7) % 7).fill('<td></td>'));
-      const sheet = `<div class="shift-print-title"><h1>シフト表</h1><span>${year}年${month + 1}月</span></div><table class="shift-print-table"><thead><tr>${weekdays.map((day, index) => `<th class="${index === 0 ? 'sun' : index === 6 ? 'sat' : ''}">${day}</th>`).join('')}</tr></thead><tbody>${Array.from({length:padded.length / 7}, (_, index) => `<tr>${padded.slice(index * 7, index * 7 + 7).join('')}</tr>`).join('')}</tbody></table>`;
+      const sheet = `<div class="shift-print-title"><span>${year}年${month + 1}月</span></div><table class="shift-print-table"><thead><tr>${weekdays.map((day, index) => `<th class="${index === 0 ? 'sun' : index === 6 ? 'sat' : ''}">${day}</th>`).join('')}</tr></thead><tbody>${Array.from({length:padded.length / 7}, (_, index) => `<tr>${padded.slice(index * 7, index * 7 + 7).join('')}</tr>`).join('')}</tbody></table>`;
       printPreparedSheet(sheet, 'shift-print-sheet');
     }
     function openMonthPicker() {
