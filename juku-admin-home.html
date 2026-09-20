@@ -57,8 +57,8 @@
     .topbar.shift-mode .brand { justify-content: flex-start; padding-left: 58px; padding-right: 320px; }
     .topbar.shift-mode .header-title { visibility: visible; }
     .topbar.left-title .brand { justify-content:flex-start; padding-left:58px; }
-    .topbar.home-mode { display:none; }
-    .topbar.home-mode + .layout main { padding-top:24px; }
+    .topbar.home-mode { display:flex; }
+    .topbar.home-mode + .layout main { padding-top:96px; }
     .home-back { position: absolute; left: 0; width: 44px; height: 44px; border: 0; border-radius: 50%; color: transparent; background: transparent; cursor: pointer; font-size: 0; }
     .home-back::before { content: ""; position: absolute; top: 16px; left: 18px; width: 10px; height: 10px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(45deg); }
     .home-back:hover { background: rgba(35, 83, 103, .12); }
@@ -208,12 +208,13 @@
     #monthlyPrev::before { left:18px; transform:rotate(45deg); }
     #monthlyNext::before { right:18px; transform:rotate(225deg); }
     .date-nav > button:not(.date-label):hover { background: #e2f1f4; }
-    .date-label { width: 100%; min-width: 0; height: 48px; padding: 0 18px; border: 1px solid #a7cfda; border-radius: 14px; text-align: center; white-space: nowrap; font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; background: #fff; color: #345d6b; cursor: pointer; }
-    .date-label { display:flex; align-items:center; justify-content:center; gap:8px; }
+    .date-label { width:auto; min-width:0; height:48px; padding:0; border:0; border-radius:0; text-align:center; white-space:nowrap; font-size:18px; font-weight:800; font-variant-numeric:tabular-nums; background:transparent; color:#345d6b; cursor:pointer; }
+    .date-label { display:flex; align-items:center; justify-content:center; gap:6px; }
+    .date-label > span { display:flex; align-items:center; justify-content:center; height:48px; padding:0 12px; border:1px solid #a7cfda; border-radius:14px; background:#fff; }
     .date-label:hover { background: #e2f1f4; }
     #monthlyView .date-nav { padding-right:0; }
-    #dashboardView .date-nav { grid-template-columns:52px minmax(240px,300px) 52px; }
-    #monthlyView .date-nav { grid-template-columns:52px minmax(140px,180px) 52px; }
+    #dashboardView .date-nav, #monthlyView .date-nav { grid-template-columns:52px auto 52px; padding-right:0; }
+    #dashboardView .date-nav { padding-right:58px; }
     .date-nav > button.daily-quiz-print { position:absolute; top:5px; right:0; display:grid; place-items:center; width:42px; height:42px; padding:0; border:1px solid #0b83c5; border-radius:50%; color:#0b83c5; background:#fff; cursor:pointer; font-size:0; }
     .daily-quiz-print::before { content:none !important; }.daily-quiz-print:hover { color:#fff; background:#0b83c5; }.daily-quiz-print svg { width:20px; height:20px; }
     .date-picker-hidden { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
@@ -675,6 +676,7 @@
       main { padding: 60px 0 90px; }
       .topbar { height: 60px; padding: 0 18px; }
       .topbar.shift-mode + .layout main { padding-top:64px; }
+      .topbar.home-mode + .layout main { padding-top:60px; }
       .role-chip { display: none; }
       .page-head { align-items: flex-start; }
       .student-row { grid-template-columns: minmax(140px, .8fr) minmax(170px, 1.1fr) minmax(150px, .7fr); gap: 14px; }
@@ -685,14 +687,14 @@
       .page-head { display: block; }
       .page-head { margin-bottom: 10px; }
       .date-nav { margin-top: 6px; width:100%; grid-template-columns:42px minmax(0, 1fr) 42px; gap: 6px; padding-right:46px; }
-      #monthlyView .date-nav { padding-right:0; grid-template-columns:42px minmax(0, 1fr) 42px; }
-      #dashboardView .date-nav { grid-template-columns:42px minmax(220px,1fr) 42px; padding-right:46px; }
-      #monthlyView .date-nav { grid-template-columns:42px minmax(140px,180px) 42px; }
+      #dashboardView .date-nav, #monthlyView .date-nav { grid-template-columns:42px auto 42px; padding-right:0; }
+      #dashboardView .date-nav { padding-right:46px; }
       .date-nav > button:not(.date-label) { width: 48px; height: 48px; }
       .date-nav > button:not(.date-label)::before { top: 17px; width: 12px; height: 12px; }
       #prevDay::before { left: 18px; }
       #nextDay::before { right: 18px; }
-      .date-label { height: 48px; padding: 0 8px; font-size: 15px; }
+      .date-label { height:48px; padding:0; font-size:15px; }
+      .date-label > span { height:48px; padding:0 8px; }
       .date-nav > button.daily-quiz-print { top:5px; width:38px; height:38px; }
       .analysis-student-list { grid-template-columns:1fr; }
       .subject-settings-grid, .break-member-list, .break-slot-groups { grid-template-columns:1fr; }
@@ -1572,7 +1574,7 @@
     function openMonthlyDetail(dateKey) { monthlyDetailDate = dateKey; monthlyDetailSlot = slotsForDate(new Date(`${dateKey}T00:00:00`))[0] || 'B'; $('monthlyDetailTitle').textContent = `${dateKey} の授業`; renderMonthlyDetailSlot(); $('monthlyDetailModal').classList.remove('hidden'); }
     function renderMonthly() {
       const year = monthlyDate.getFullYear(); const month = monthlyDate.getMonth(); const first = new Date(year, month, 1).getDay(); const total = new Date(year, month + 1, 0).getDate();
-      $('monthlyLabel').textContent = `${year}年${month + 1}月`;
+      $('monthlyLabel').innerHTML = `<span>${year}年</span><span>${month + 1}月</span>`;
       const weekdays = ['日','月','火','水','木','金','土']; const cells = weekdays.map(day => `<div class="monthly-weekday">${day}</div>`).join('');
       const holidays = { '2026-09-21':'敬老の日', '2026-09-22':'秋分の日' };
       const days = Array(first).fill('<div class="monthly-cell monthly-empty"></div>').join('') + Array.from({ length: total }, (_, i) => { const day = i + 1; const date = new Date(year, month, day); const dateKey = `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`; const dayOfWeek = date.getDay(); const weekdayOccurrence = Math.floor((day - 1) / 7) + 1; const holiday = holidays[dateKey]; const visibleSlots = slotsForDate(date); const isClosed = !visibleSlots.length || (weekdayOccurrence >= 5 && !activeLongBreaksForDate(date).length); const summaries = visibleSlots.map(slot => { const slotStudents = accountStudentsForDateSlot(date, slot); const count = slotStudents.length; const teacherCount = Math.max(1, scheduledStaffNames(dateKey, slot).length); const shortage = count > teacherCount * 4 || slotStudents.some(student => !student.teacher); return `<span class="slot-${slot.toLowerCase()}">${slot}: ${count}人 <em class="status ${shortage ? 'shortage' : ''}">${shortage ? '欠' : 'OK'}</em></span>`; }).join(''); const cellClass = holiday ? 'holiday' : dayOfWeek === 0 ? 'sunday' : dayOfWeek === 6 ? 'saturday' : ''; return `<button type="button" class="monthly-cell ${cellClass} ${isClosed ? 'monthly-empty' : ''}" data-monthly-date="${dateKey}"><div class="monthly-date"><span>${day}</span>${isClosed ? '<small>休み</small>' : ''}</div>${holiday ? `<span class="monthly-holiday-name">${holiday}</span>` : ''}<div class="monthly-summary">${summaries}</div></button>`; }).join('');
@@ -2093,7 +2095,7 @@
 
     function switchView(view) {
       const isHome = view === 'dashboard'; const isAccounts = view === 'accounts'; const isShifts = view === 'shifts'; const isMonthly = view === 'monthly'; const isQuizzes = view === 'quizzes'; const isOther = view === 'other'; const isAnalysis = view === 'analysis'; const isLongBreaks = view === 'longBreaks'; const isSubjects = view === 'subjects';
-      $('headerTitle').textContent = isAccounts ? 'アカウント管理' : isShifts ? 'シフト' : isMonthly ? 'スケジュール' : isQuizzes ? '問題バンク' : isOther ? 'その他' : isAnalysis ? 'メンバー' : isLongBreaks ? '長期休み' : isSubjects ? '科目' : 'ホーム';
+      $('headerTitle').textContent = isHome ? '本日の授業' : isAccounts ? 'アカウント管理' : isShifts ? 'シフト' : isMonthly ? 'スケジュール' : isQuizzes ? '問題バンク' : isOther ? 'その他' : isAnalysis ? 'メンバー' : isLongBreaks ? '長期休み' : isSubjects ? '科目' : 'ホーム';
       $('headerShiftActions').classList.toggle('visible', isShifts || isMonthly);
       document.querySelector('.topbar').classList.toggle('shift-mode', isShifts || isMonthly);
       document.querySelector('.topbar').classList.toggle('left-title', isOther || isAnalysis);
