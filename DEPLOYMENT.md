@@ -2,8 +2,8 @@
 
 1. GitHub Desktop でこのフォルダを GitHub に push します。
 2. Vercel で GitHub リポジトリを Import し、Framework Preset は `Other`、Build Command は空欄、Output Directory は `.` にして Deploy します。
-3. Firebase Console の Authentication → Sign-in method で「メール／パスワード」を有効にし、Authentication → Users から管理者ユーザーを1件作成します。Vercelのログイン画面には、そのメールアドレスとパスワードを入力します。
-4. Firestore Database のルールを、少なくとも未ログインの読み書きを拒否する設定に変更します。Firebase の `apiKey` と設定値はブラウザに置かれる公開設定であり、秘密情報ではありません。データを守るのは Firestore Rules と Firebase Authentication です。
+3. 現在のログインは仮実装です。ログイン画面で ID `admin`、パスワード `admin` を入力します。本番用のFirebase Authenticationは後で切り替えます。
+4. 本番化するまでは、Firestoreのルール変更やAuthenticationユーザー作成は不要です。本番公開時は、未ログインの読み書きを拒否するFirestore RulesとFirebase Authenticationを設定してください。
 
 公開用の最小ルール例です。実運用では、管理者・講師・生徒の権限ごとにさらに分けてください。
 
