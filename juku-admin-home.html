@@ -621,8 +621,9 @@
     .login-backdrop { position:fixed; inset:0; z-index:50; display:grid; place-items:center; background:#eef7f8; }
     .login-backdrop.hidden { display:none; }
     .login-card { width:min(92%, 380px); padding:28px; border-radius:16px; background:#fff; box-shadow:0 16px 50px rgba(22,53,77,.16); }
-    .login-card h1 { margin:0 0 20px; font-size:24px; } .login-card label { display:block; margin:12px 0 5px; font-weight:800; }
+    .login-card h1 { margin:0 0 8px; font-size:24px; } .login-description { margin:0 0 20px; color:#687786; font-size:13px; } .login-card label { display:block; margin:12px 0 5px; font-weight:800; }
     .login-card input { width:100%; height:44px; padding:0 10px; border:1px solid #cdd6dc; border-radius:8px; }
+    .login-error { min-height:18px; margin:10px 0 0; color:#c5473d; font-size:12px; font-weight:700; }
     .login-submit { width:100%; margin-top:18px; height:46px; border:0; border-radius:9px; color:#fff; background:#4f93b1; cursor:pointer; font-weight:900; }
 
     @media (max-width: 900px) {
@@ -770,7 +771,7 @@
     <button class="bottom-tab" data-view="shifts"><span class="tab-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>シフト</button>
     <button class="bottom-tab" data-view="other"><span class="tab-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg></span>その他</button>
   </div>
-  <div class="login-backdrop hidden" id="loginModal"><form class="login-card" id="loginForm"><h1>ログイン</h1><label for="loginId">ID</label><input id="loginId" inputmode="text" autocomplete="username" value="adimin" required><label for="loginPassword">パスワード</label><input id="loginPassword" type="password" autocomplete="current-password" value="admin" required><button class="login-submit" type="submit">ログイン</button></form></div>
+  <div class="login-backdrop" id="loginModal"><form class="login-card" id="loginForm"><h1>生徒管理アプリ</h1><p class="login-description">管理画面にログインしてください。</p><label for="loginEmail">メールアドレス</label><input id="loginEmail" type="email" inputmode="email" autocomplete="username" placeholder="例：admin@example.com" required><label for="loginPassword">パスワード</label><input id="loginPassword" type="password" autocomplete="current-password" required><p class="login-error" id="loginError" role="alert"></p><button class="login-submit" type="submit">ログイン</button></form></div>
   <div class="modal-backdrop hidden" id="shiftEditModal"><form class="shift-edit-card shift-edit-layout" id="shiftEditForm"><div class="shift-edit-header"><div><h2>シフト編集</h2><p id="shiftEditDate">日付を選択</p></div><button type="button" id="closeShiftEdit" class="shift-close">×</button></div><div class="shift-edit-body"><div class="decided-shifts"><h3>決定したシフト</h3><div id="decidedShiftCards"></div></div><div class="shift-staff-list"><h3>スタッフ</h3><div id="shiftStaffOptions"></div></div></div><div class="shift-edit-actions"><button class="cancel" id="shiftCancelBottom" type="button">キャンセル</button><button class="save" type="submit">保存して閉じる</button></div></form></div>
   <div class="modal-backdrop hidden" id="monthPickerModal"><div class="month-picker-card"><div class="month-picker-head"><h2>月を選択</h2><button type="button" class="month-picker-close" id="closeMonthPicker">×</button></div><div class="month-picker-label">月</div><div class="month-picker-grid" id="monthPickerGrid"></div><button type="button" class="month-picker-confirm" id="confirmMonthPicker">決定</button></div></div>
   <div class="modal-backdrop hidden" id="studentPickerModal"><div class="student-picker"><div class="student-picker-head"><h2>生徒を追加</h2><button type="button" class="student-picker-close" id="closeStudentPicker">×</button></div><div class="student-picker-filters"><input id="studentPickerSearch" placeholder="生徒名で検索"><select id="studentPickerGrade"><option value="">学年すべて</option><option>小学1年</option><option>小学2年</option><option>小学3年</option><option>小学4年</option><option>小学5年</option><option>小学6年</option><option>中学1年</option><option>中学2年</option><option>中学3年</option><option>高校1年</option><option>高校2年</option><option>高校3年</option></select></div><div class="student-picker-list" id="studentPickerList"></div><button type="button" class="student-picker-confirm" id="confirmStudentPicker">決定</button></div></div>
@@ -830,7 +831,7 @@
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
-    import { getAuth, signOut } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
+    import { getAuth, signOut, onAuthStateChanged, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
     import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
 
     const firebaseConfig = {
@@ -846,6 +847,8 @@
     const auth = getAuth(firebaseApp);
     const db = getFirestore(firebaseApp);
     window.jukuFirebase = { app: firebaseApp, auth, db };
+    const localDemoMode = location.protocol === 'file:' || ['localhost', '127.0.0.1'].includes(location.hostname);
+    let appStarted = false;
     const slotTimes = {
       S: '13:45〜15:15', A: '15:20〜16:50', B: '16:55〜18:25',
       C: '18:30〜20:00', D: '20:05〜21:35'
@@ -2043,7 +2046,35 @@
     }));
     $('addAccountBtn').addEventListener('click', openAccountModal);
     $('homeBack').addEventListener('click', () => switchView(returnView));
-    $('loginForm').addEventListener('submit', event => { event.preventDefault(); if ($('loginId').value.trim() !== 'adimin' || $('loginPassword').value !== 'admin') { showToast('IDまたはパスワードが違います'); return; } $('loginModal').classList.add('hidden'); showToast('ログインしました'); });
+    async function startApp() {
+      if (appStarted) return;
+      appStarted = true;
+      $('loginModal').classList.add('hidden');
+      switchView('dashboard');
+      try {
+        await seedFirebaseDemoData();
+        await seedDefaultCurriculumSettings();
+        await loadFirebaseData();
+        await seedFullQuizBank();
+        await refreshQuizBank();
+      } catch (error) {
+        console.error('アプリ初期化失敗', error);
+        showToast('データの読み込みに失敗しました。通信状態を確認してください');
+      }
+    }
+    $('loginForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      const email = $('loginEmail').value.trim();
+      const password = $('loginPassword').value;
+      $('loginError').textContent = '';
+      if (localDemoMode && email === 'admin@example.com' && password === 'admin') return startApp();
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+        console.error('ログイン失敗', error);
+        $('loginError').textContent = 'メールアドレスまたはパスワードが違います。';
+      }
+    });
     $('selectAllAnalysis').addEventListener('click', () => { const eligible = accounts.filter(account => account.type === 'student' && quizGradeFor(account)); const allSelected = eligible.length > 0 && analysisSelection.size === eligible.length; analysisSelection = allSelected ? new Set() : new Set(eligible.map(account => String(accounts.indexOf(account)))); renderAnalysisView(); });
     $('openQuizLibrary').addEventListener('click', () => { returnView = 'other'; switchView('quizzes'); });
     $('openAccountManagement').addEventListener('click', () => { returnView = 'other'; switchView('accounts'); });
@@ -2057,7 +2088,7 @@
     $('saveLongBreak').addEventListener('click', () => { const name = $('longBreakName').value.trim(); const start = $('longBreakStart').value; const end = $('longBreakEnd').value; if (!name || !start || !end || start > end || !breakMemberSelection.size || !breakLessonRows.length || !window.breakWeekdaySlots.length || !window.breakSaturdaySlots.length) return showToast('名称・期間・コマ・生徒・追加授業を設定してください'); longBreaks.push({ id:Date.now().toString(36), name, start, end, weekdaySlots:[...window.breakWeekdaySlots], saturdaySlots:[...window.breakSaturdaySlots], members:[...breakMemberSelection], lessons:breakLessonRows.map(row => ({ ...row })) }); localStorage.setItem('jukuLongBreaks', JSON.stringify(longBreaks)); persistFirebase(saveFirebaseLongBreaks); $('longBreakModal').classList.add('hidden'); renderLongBreakList(); render(); renderMonthly(); renderShifts(); showToast(`${name}を保存しました`); });
     $('openLogout').addEventListener('click', () => $('logoutModal').classList.remove('hidden'));
     $('cancelLogout').addEventListener('click', () => $('logoutModal').classList.add('hidden'));
-    $('confirmLogout').addEventListener('click', async () => { try { await signOut(auth); } catch (_) {} $('logoutModal').classList.add('hidden'); $('loginPassword').value = ''; $('loginModal').classList.remove('hidden'); showToast('ログアウトしました'); });
+    $('confirmLogout').addEventListener('click', async () => { try { await signOut(auth); } catch (_) {} appStarted = false; $('logoutModal').classList.add('hidden'); $('loginPassword').value = ''; $('loginError').textContent = ''; $('loginModal').classList.remove('hidden'); showToast('ログアウトしました'); });
     document.querySelectorAll('[data-open-analysis]').forEach(button => button.addEventListener('click', openAnalysisModal));
     $('headerAutoFillShift').textContent = '自動入力';
     $('headerShiftActions').insertAdjacentHTML('beforeend', '<button class="header-status" id="headerShiftStatus" type="button">シフト提出状況</button><button class="header-submit" id="headerSubmitShift" type="button">シフト提出</button>');
@@ -2139,8 +2170,10 @@
     updateAccountForm();
     if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(error => console.warn('Service worker registration failed', error)));
     loadQuizCache();
-    switchView('dashboard');
-    seedFirebaseDemoData().then(seedDefaultCurriculumSettings).then(loadFirebaseData).then(() => seedFullQuizBank().then(refreshQuizBank));
+    onAuthStateChanged(auth, user => {
+      if (user || localDemoMode) startApp();
+      else $('loginModal').classList.remove('hidden');
+    });
   </script>
 </body>
 </html>
