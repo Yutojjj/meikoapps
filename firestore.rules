@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 仮運用用: 認証状態に関係なく全データを読み書き可能にする。
+    // 本番運用へ移行する前に、必ず request.auth を使った制限へ変更してください。
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

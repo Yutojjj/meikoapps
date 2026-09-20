@@ -167,7 +167,10 @@
     .shift-print-title h1 { margin:0; font-size:22pt; } .shift-print-title span { font-size:13pt; font-weight:800; }
     .shift-print-table { width:100%; margin-top:7mm; border-collapse:collapse; table-layout:fixed; font-size:10pt; }
     .shift-print-table th, .shift-print-table td { min-height:23mm; padding:3mm; border:1px solid #80909a; vertical-align:top; text-align:left; }
-    .shift-print-table th { min-height:0; padding:2mm; text-align:center; background:#eaf4f8; } .shift-print-table .sun { color:#b74450; background:#fff7f7; } .shift-print-table .sat { color:#176ca7; background:#f3f9ff; }
+    .shift-print-table th { min-height:0; padding:2mm; text-align:center; background:#e6e6e6; }
+    .shift-print-table th.sun, .shift-print-table td.sun { color:#c8323d; background:#fff0f1; }
+    .shift-print-table th.sat, .shift-print-table td.sat { color:#146bc0; background:#edf6ff; }
+    .shift-print-table th.holiday, .shift-print-table td.holiday { color:#c8323d; background:#fff0f1; }
     .shift-print-date { display:flex; justify-content:space-between; margin-bottom:2.5mm; font-weight:900; }
     .shift-print-staff { display:grid; gap:1.5mm; font-weight:800; line-height:1.35; }
     .shift-print-member { display:flex; align-items:center; justify-content:space-between; gap:3mm; padding:1.4mm 2mm; color:#fff; background:var(--member-color,#5b9eb5); font-size:8.5pt; font-weight:900; }
@@ -613,6 +616,9 @@
     .shift-calendar { width:100%; max-width:100%; min-width:0; border:0; background:#fffdf7; overflow:hidden; }
     .shift-month-nav { display:flex; align-items:center; justify-content:center; gap:16px; padding:14px; border-bottom:1px solid var(--line); }
     .shift-month-nav button { width:44px; height:44px; flex:0 0 44px; display:flex; align-items:center; justify-content:center; box-sizing:border-box; padding:0 0 3px; border:1px solid #9dd7e4; border-radius:50%; color:#587082; background:#fff; cursor:pointer; font-family:Arial,sans-serif; font-size:30px; line-height:1; }
+    .shift-month-nav .shift-clear-month { width:42px; height:42px; margin-left:auto; padding:0; border:1px solid #e58d96; color:#c94f58; font-size:19px; }
+    .shift-month-nav .shift-clear-month:hover { color:#fff; background:#d45d67; }
+    .shift-month-nav .shift-clear-month svg { width:20px; height:20px; }
     .shift-month-label { display:flex; gap:10px; align-items:center; min-width:190px; justify-content:center; text-align:center; font-size:18px; font-weight:900; }
     .shift-month-label span { padding:8px 14px; border:1px solid #9dd7e4; border-radius:10px; background:#fff; color:#28536b; cursor:pointer; user-select:none; }
     .shift-month-label span:hover, .shift-month-nav button:hover { background:#dceff3; }
@@ -784,7 +790,7 @@
       </section>
       <section id="shiftView" class="shift-view view-hidden" aria-label="シフト確認">
         <div class="shift-toolbar"></div>
-        <div class="shift-calendar"><div class="shift-month-nav"><button id="shiftPrevMonth" type="button">‹</button><div class="shift-month-label" id="shiftMonthLabel"></div><button id="shiftNextMonth" type="button">›</button></div><div class="shift-week"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div><div class="shift-days" id="shiftGrid"></div></div>
+        <div class="shift-calendar"><div class="shift-month-nav"><button id="shiftPrevMonth" type="button">‹</button><div class="shift-month-label" id="shiftMonthLabel"></div><button id="shiftNextMonth" type="button">›</button><button id="clearShiftMonth" class="shift-clear-month" type="button" aria-label="この月のシフトをすべて削除"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l-1 14H6L5 7zm3 3v8m4-8v8m4-8v8M4 4h5l1-2h6l1 2h4v2H4V4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div><div class="shift-week"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div><div class="shift-days" id="shiftGrid"></div></div>
       </section>
       <section id="quizView" class="quiz-view view-hidden" aria-label="問題バンク"><div class="quiz-library-head"><div><h2>問題バンク</h2><p id="quizLibraryLabel">中1・数学　レベル1</p></div><div class="quiz-filters"><select id="quizGradeSelect" aria-label="学年"></select><select id="quizLevelSelect" aria-label="レベル"></select></div></div><div id="quizSectionList"></div></section>
       <section id="otherView" class="other-view view-hidden" aria-label="その他"><div class="other-menu"><button type="button" class="other-menu-card" id="openQuizLibrary"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h7a3 3 0 0 1 3 3v10H7a3 3 0 0 0-3 3zM20 5.5h-7a3 3 0 0 0-3 3v10h7a3 3 0 0 1 3 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span><strong>問題</strong><small>問題バンク・印刷</small></button><button type="button" class="other-menu-card" id="openAccountManagement"><span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 21c.7-4.5 3-7 7-7s6.3 2.5 7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><strong>アカウント管理</strong><small>生徒・アルバイトの登録と編集</small></button><button type="button" class="other-menu-card" id="openLongBreaks"><span>☀</span><strong>長期休み</strong><small>夏期・冬期などの特別授業</small></button><button type="button" class="other-menu-card" id="openSubjectSettings"><span>◫</span><strong>科目</strong><small>学年別の科目・映像授業を設定</small></button><button type="button" class="other-menu-card" id="openLogout"><span>↪</span><strong>ログアウト</strong><small>管理画面からサインアウト</small></button></div></section>
@@ -862,9 +868,22 @@
   <div class="modal-backdrop hidden" id="subjectAddModal"><form class="subject-add-modal" id="subjectAddForm"><h2 id="subjectAddTitle">科目を追加</h2><label>科目名<input id="subjectAddName" placeholder="例：プログラミング" required></label><div class="subject-add-actions"><button type="button" id="cancelSubjectAdd">キャンセル</button><button type="submit" class="primary">追加する</button></div></form></div>
   <div class="modal-backdrop hidden" id="logoutModal"><div class="logout-card"><h2>ログアウトしますか？</h2><p>再度利用するにはログインが必要です。</p><div class="logout-actions"><button type="button" id="cancelLogout">キャンセル</button><button type="button" class="logout-confirm" id="confirmLogout">ログアウト</button></div></div></div>
 
-  <script>
-    // 仮ログイン中は外部接続を使わず、ブラウザ内に平文保存する。
-    window.jukuFirebase = null;
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyBBQkzTqsDiY6TvxdnWw4gMB36Fj2NUIA8',
+      authDomain: 'juku-117e4.firebaseapp.com',
+      projectId: 'juku-117e4',
+      storageBucket: 'juku-117e4.firebasestorage.app',
+      messagingSenderId: '830179126970',
+      appId: '1:830179126970:web:b032da4c237f235fd39c83',
+      measurementId: 'G-GDKXEBGE7C'
+    };
+    const firebaseApp = initializeApp(firebaseConfig);
+    const db = getFirestore(firebaseApp);
+    window.jukuFirebase = { app: firebaseApp, db };
     let appStarted = false;
     const slotTimes = {
       S: '13:45〜15:15', A: '15:20〜16:50', B: '16:55〜18:25',
@@ -1293,8 +1312,11 @@
         if (submissionDoc.exists()) { Object.keys(submittedShifts).forEach(key => delete submittedShifts[key]); Object.assign(submittedShifts, submissionDoc.data().shifts || {}); }
         if (longBreakDoc.exists()) { longBreaks = Array.isArray(longBreakDoc.data().items) ? longBreakDoc.data().items : []; localStorage.setItem('jukuLongBreaks', JSON.stringify(longBreaks)); }
         if (subjectSettingsDoc.exists()) { subjectsByLevel = subjectSettingsDoc.data().subjectsByLevel || subjectsByLevel; videoSubjects = subjectSettingsDoc.data().videoSubjects || videoSubjects; localStorage.setItem('jukuSubjectsByLevel', JSON.stringify(subjectsByLevel)); localStorage.setItem('jukuVideoSubjects', JSON.stringify(videoSubjects)); }
-        Object.keys(shiftAssignments).forEach(key => delete shiftAssignments[key]);
-        shiftAssignmentSnapshot.docs.forEach(item => { const value = item.data(); const date = value.date || item.id; if (date) shiftAssignments[date] = Array.isArray(value.assignments) ? value.assignments : []; });
+        if (!shiftAssignmentSnapshot.empty) {
+          Object.keys(shiftAssignments).forEach(key => delete shiftAssignments[key]);
+          shiftAssignmentSnapshot.docs.forEach(item => { const value = item.data(); const date = value.date || item.id; if (date) shiftAssignments[date] = Array.isArray(value.assignments) ? value.assignments : []; });
+          localStorage.setItem('jukuShiftAssignments', JSON.stringify(shiftAssignments));
+        }
         render(); renderMonthly(); renderAccounts(); renderShifts(); renderQuizBank();
         showToast('Firebaseのデータを読み込みました');
       } catch (error) {
@@ -1306,11 +1328,11 @@
     async function saveFirebaseLessons() { const source = Object.keys(monthlyAssignments).length ? Object.entries(monthlyAssignments).flatMap(([date, slots]) => Object.entries(slots).flatMap(([slot, list]) => list.map(student => ({ date, slot, student })))) : Object.entries(students).flatMap(([slot, list]) => list.map(student => ({ date: '2026-09-22', slot, student }))); const writes = source.map(({date, slot, student}) => setDoc(doc(db, 'lessonAssignments', `${date}-${slot}-${idForFirebase(student.name)}`), { date, slot, studentName: student.name, teacherName: student.teacher || '', subject: student.subject || '', updatedAt: new Date().toISOString() })); await Promise.all(writes); }
     async function saveFirebaseShiftRequirements() { await setDoc(doc(db, 'shiftRequirements', `${shiftMonthDate.getFullYear()}-${String(shiftMonthDate.getMonth()+1).padStart(2,'0')}`), shiftRequirements); }
     async function saveFirebaseSubmittedShifts() { await setDoc(doc(db, 'shiftSubmissions', 'demo-parttime'), { teacherName: previewStaff, shifts: submittedShifts, updatedAt: new Date().toISOString() }); }
-    async function saveFirebaseShiftAssignments() { await Promise.all(Object.entries(shiftAssignments).map(([date, assignments]) => setDoc(doc(db, 'shiftAssignments', date), { date, assignments, updatedAt: new Date().toISOString() }))); }
+    async function saveFirebaseShiftAssignments(deletedDates = []) { await Promise.all(deletedDates.map(date => deleteDoc(doc(db, 'shiftAssignments', date)))); await Promise.all(Object.entries(shiftAssignments).map(([date, assignments]) => setDoc(doc(db, 'shiftAssignments', date), { date, assignments, updatedAt: new Date().toISOString() }))); }
     async function saveFirebaseLongBreaks() { await setDoc(doc(db, 'appSettings', 'longBreaks'), { items:longBreaks, updatedAt:new Date().toISOString() }); }
     async function saveFirebaseSubjectSettings() { await setDoc(doc(db, 'appSettings', 'subjectSettings'), { subjectsByLevel, videoSubjects, updatedAt:new Date().toISOString() }); }
     function idForFirebase(value) { return value.toLowerCase().replace(/[^a-z0-9ぁ-んァ-ヶ一-龠]+/g, '-'); }
-    function persistFirebase() {}
+    function persistFirebase(saveFn) { if (typeof saveFn !== 'function') return; Promise.resolve().then(saveFn).catch(error => { console.error('Firebase保存失敗', error); showToast(`Firebase保存失敗（${error?.code || '接続エラー'}）`); }); }
     const previewStaff = '佐藤先生';
     function registeredStaffNames() { return accounts.filter(account => account.type === 'parttime' && account.name).map(account => account.name); }
     function dateKeyFor(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`; }
@@ -1392,7 +1414,7 @@
     function makePassword() { return String(Math.floor(1000 + Math.random() * 9000)); }
     let monthlyDetailDate = ''; let monthlyDetailSlot = 'B'; let monthlyDetailTeacher = '';
     function getMonthlySlotStudents(date, slot) { if (!date) return students[slot] || []; if (!monthlyAssignments[date]) monthlyAssignments[date] = {}; if (!monthlyAssignments[date][slot]) monthlyAssignments[date][slot] = []; return monthlyAssignments[date][slot]; }
-    let submitSlot = 'B'; let submitChanged = false; let submitOriginal = '{}'; let submitDraft = {}; const submittedShifts = {}; let shiftEditDateKey = ''; const shiftAssignments = {};
+    let submitSlot = 'B'; let submitChanged = false; let submitOriginal = '{}'; let submitDraft = {}; const submittedShifts = {}; let shiftEditDateKey = ''; const shiftAssignments = readStoredJSON('jukuShiftAssignments', {});
     const shiftRequirementDefaults = { 月:{B:2,C:2,D:1}, 火:{B:2,C:2,D:1}, 水:{B:2,C:2,D:1}, 木:{B:2,C:2,D:1}, 金:{B:2,C:2,D:1}, 土:{S:1,A:1} };
     let shiftRequirements = readStoredJSON('jukuShiftRequirements', shiftRequirementDefaults);
     let autoFillPeriod = readStoredJSON('jukuAutoFillPeriod', null);
@@ -1497,10 +1519,12 @@
       const year = shiftMonthDate.getFullYear(); const month = shiftMonthDate.getMonth();
       const first = new Date(year, month, 1).getDay(); const total = new Date(year, month + 1, 0).getDate();
       const weekdays = ['日','月','火','水','木','金','土'];
+      const holidays = { '2026-09-21': '敬老の日', '2026-09-22': '秋分の日' };
       const cells = Array.from({ length:total }, (_, index) => {
-        const day = index + 1; const date = new Date(year, month, day); const key = dateKeyFor(date); const staff = (shiftAssignments[key] || []).filter(item => registeredStaffNames().includes(item.teacher));
+        const day = index + 1; const date = new Date(year, month, day); const key = dateKeyFor(date); const holiday = holidays[key]; const staff = (shiftAssignments[key] || []).filter(item => registeredStaffNames().includes(item.teacher));
         const members = staff.length ? staff.map(item => `<div class="shift-print-member" style="--member-color:${teacherColor(item.teacher)}"><strong>${item.teacher}</strong><span>${(item.slots || []).filter(Boolean).join('')}</span></div>`).join('') : '<span class="shift-print-empty">―</span>';
-        return `<td class="${date.getDay() === 0 ? 'sun' : date.getDay() === 6 ? 'sat' : ''}"><div class="shift-print-date"><span>${day}（${weekdays[date.getDay()]}）</span></div><div class="shift-print-staff">${members}</div></td>`;
+        const cellClass = holiday ? 'holiday' : date.getDay() === 0 ? 'sun' : date.getDay() === 6 ? 'sat' : '';
+        return `<td class="${cellClass}"><div class="shift-print-date"><span>${day}（${weekdays[date.getDay()]}）</span></div><div class="shift-print-staff">${members}</div></td>`;
       });
       const cellsByWeek = Array(first).fill('<td></td>').concat(cells);
       const padded = cellsByWeek.concat(Array((7 - cellsByWeek.length % 7) % 7).fill('<td></td>'));
@@ -1550,6 +1574,18 @@
       names.slice(1).forEach(name => addShiftAssignmentCard(name));
       const assignments = (saved || []).filter(item => registeredStaffNames().includes(item.teacher));
       assignments.forEach(item => { const card = [...$('decidedShiftCards').children].find(element => element.dataset.staffName === item.teacher); if (!card) return; card.querySelectorAll('.shift-slot-button').forEach(button => button.classList.toggle('active', item.slots.includes(button.textContent))); });
+    }
+    function clearShiftMonth() {
+      const year = shiftMonthDate.getFullYear(); const month = shiftMonthDate.getMonth();
+      askDelete(`${year}年${month + 1}月のシフトをすべて削除しますか？`, () => {
+        const prefix = `${year}-${String(month + 1).padStart(2, '0')}-`;
+        const deletedDates = Object.keys(shiftAssignments).filter(key => key.startsWith(prefix));
+        deletedDates.forEach(key => delete shiftAssignments[key]);
+        localStorage.setItem('jukuShiftAssignments', JSON.stringify(shiftAssignments));
+        renderShifts();
+        persistFirebase(() => saveFirebaseShiftAssignments(deletedDates));
+        showToast(`${year}年${month + 1}月のシフトを削除しました`);
+      });
     }
     function nameWithRuby(person) { return person.furigana ? `<ruby>${person.name}<rt>${person.furigana}</rt></ruby>` : person.name; }
     function teacherSubjectScore(teacher, subject) { const account = accounts.find(item => item.type === 'parttime' && item.name === teacher); const level = account?.skillLevels; const category = subject === '算数' || subject === '数学' ? '数学' : subject; const value = level?.中学?.[category] ?? level?.高校?.[category] ?? level?.小学?.[category]; if (value === 0) return 0; return teacher === subjectBest[subject] ? 5 : (value ?? 1); }
@@ -2189,6 +2225,7 @@
       appStarted = true;
       $('loginModal').classList.add('hidden');
       switchView('dashboard');
+      loadFirebaseData();
     }
     $('loginForm').addEventListener('submit', event => {
       event.preventDefault();
@@ -2253,7 +2290,8 @@
     });
     $('closeShiftEdit').addEventListener('click', () => $('shiftEditModal').classList.add('hidden'));
     $('shiftCancelBottom').addEventListener('click', () => $('shiftEditModal').classList.add('hidden'));
-    $('shiftEditForm').addEventListener('submit', event => { event.preventDefault(); const key = shiftEditDateKey || `${shiftMonthDate.getFullYear()}-${String(shiftMonthDate.getMonth()+1).padStart(2,'0')}-${String(new Date().getDate()).padStart(2,'0')}`; shiftAssignments[key] = [...$('decidedShiftCards').querySelectorAll('.decided-card')].map(card => ({ teacher: card.dataset.staffName, slots: [...card.querySelectorAll('.shift-slot-button.active')].map(button => button.textContent) })); $('shiftEditModal').classList.add('hidden'); renderShifts(); persistFirebase(saveFirebaseShiftAssignments); showToast('シフトを更新しました'); });
+    $('shiftEditForm').addEventListener('submit', event => { event.preventDefault(); const key = shiftEditDateKey || `${shiftMonthDate.getFullYear()}-${String(shiftMonthDate.getMonth()+1).padStart(2,'0')}-${String(new Date().getDate()).padStart(2,'0')}`; shiftAssignments[key] = [...$('decidedShiftCards').querySelectorAll('.decided-card')].map(card => ({ teacher: card.dataset.staffName, slots: [...card.querySelectorAll('.shift-slot-button.active')].map(button => button.textContent) })); localStorage.setItem('jukuShiftAssignments', JSON.stringify(shiftAssignments)); $('shiftEditModal').classList.add('hidden'); renderShifts(); persistFirebase(saveFirebaseShiftAssignments); showToast('シフトを更新しました'); });
+    $('clearShiftMonth').addEventListener('click', clearShiftMonth);
     $('closeModal').addEventListener('click', closeAccountModal);
     $('cancelModal').addEventListener('click', closeAccountModal);
     $('deleteAccount').addEventListener('click', requestAccountDelete);
