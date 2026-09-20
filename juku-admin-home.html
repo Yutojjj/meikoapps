@@ -772,6 +772,25 @@
     <button class="bottom-tab" data-view="other"><span class="tab-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg></span>その他</button>
   </div>
   <div class="login-backdrop" id="loginModal"><form class="login-card" id="loginForm"><h1>生徒管理アプリ</h1><p class="login-description">管理画面にログインしてください。</p><label for="loginId">ID</label><input id="loginId" type="text" inputmode="text" autocomplete="username" placeholder="admin" required><label for="loginPassword">パスワード</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="admin" required><p class="login-error" id="loginError" role="alert"></p><button class="login-submit" type="submit">ログイン</button></form></div>
+  <script>
+    (() => {
+      const form = document.getElementById('loginForm');
+      const modal = document.getElementById('loginModal');
+      const error = document.getElementById('loginError');
+      if (!form || !modal || !error) return;
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const id = document.getElementById('loginId').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        if (id !== 'admin' || password !== 'admin') {
+          error.textContent = 'IDまたはパスワードが違います。';
+          return;
+        }
+        sessionStorage.setItem('studentAppDemoLoggedIn', '1');
+        modal.classList.add('hidden');
+      });
+    })();
+  </script>
   <div class="modal-backdrop hidden" id="shiftEditModal"><form class="shift-edit-card shift-edit-layout" id="shiftEditForm"><div class="shift-edit-header"><div><h2>シフト編集</h2><p id="shiftEditDate">日付を選択</p></div><button type="button" id="closeShiftEdit" class="shift-close">×</button></div><div class="shift-edit-body"><div class="decided-shifts"><h3>決定したシフト</h3><div id="decidedShiftCards"></div></div><div class="shift-staff-list"><h3>スタッフ</h3><div id="shiftStaffOptions"></div></div></div><div class="shift-edit-actions"><button class="cancel" id="shiftCancelBottom" type="button">キャンセル</button><button class="save" type="submit">保存して閉じる</button></div></form></div>
   <div class="modal-backdrop hidden" id="monthPickerModal"><div class="month-picker-card"><div class="month-picker-head"><h2>月を選択</h2><button type="button" class="month-picker-close" id="closeMonthPicker">×</button></div><div class="month-picker-label">月</div><div class="month-picker-grid" id="monthPickerGrid"></div><button type="button" class="month-picker-confirm" id="confirmMonthPicker">決定</button></div></div>
   <div class="modal-backdrop hidden" id="studentPickerModal"><div class="student-picker"><div class="student-picker-head"><h2>生徒を追加</h2><button type="button" class="student-picker-close" id="closeStudentPicker">×</button></div><div class="student-picker-filters"><input id="studentPickerSearch" placeholder="生徒名で検索"><select id="studentPickerGrade"><option value="">学年すべて</option><option>小学1年</option><option>小学2年</option><option>小学3年</option><option>小学4年</option><option>小学5年</option><option>小学6年</option><option>中学1年</option><option>中学2年</option><option>中学3年</option><option>高校1年</option><option>高校2年</option><option>高校3年</option></select></div><div class="student-picker-list" id="studentPickerList"></div><button type="button" class="student-picker-confirm" id="confirmStudentPicker">決定</button></div></div>
@@ -2080,7 +2099,7 @@
     $('saveLongBreak').addEventListener('click', () => { const name = $('longBreakName').value.trim(); const start = $('longBreakStart').value; const end = $('longBreakEnd').value; if (!name || !start || !end || start > end || !breakMemberSelection.size || !breakLessonRows.length || !window.breakWeekdaySlots.length || !window.breakSaturdaySlots.length) return showToast('名称・期間・コマ・生徒・追加授業を設定してください'); longBreaks.push({ id:Date.now().toString(36), name, start, end, weekdaySlots:[...window.breakWeekdaySlots], saturdaySlots:[...window.breakSaturdaySlots], members:[...breakMemberSelection], lessons:breakLessonRows.map(row => ({ ...row })) }); localStorage.setItem('jukuLongBreaks', JSON.stringify(longBreaks)); persistFirebase(saveFirebaseLongBreaks); $('longBreakModal').classList.add('hidden'); renderLongBreakList(); render(); renderMonthly(); renderShifts(); showToast(`${name}を保存しました`); });
     $('openLogout').addEventListener('click', () => $('logoutModal').classList.remove('hidden'));
     $('cancelLogout').addEventListener('click', () => $('logoutModal').classList.add('hidden'));
-    $('confirmLogout').addEventListener('click', async () => { appStarted = false; $('logoutModal').classList.add('hidden'); $('loginId').value = ''; $('loginPassword').value = ''; $('loginError').textContent = ''; $('loginModal').classList.remove('hidden'); showToast('ログアウトしました'); });
+    $('confirmLogout').addEventListener('click', async () => { appStarted = false; sessionStorage.removeItem('studentAppDemoLoggedIn'); $('logoutModal').classList.add('hidden'); $('loginId').value = ''; $('loginPassword').value = ''; $('loginError').textContent = ''; $('loginModal').classList.remove('hidden'); showToast('ログアウトしました'); });
     document.querySelectorAll('[data-open-analysis]').forEach(button => button.addEventListener('click', openAnalysisModal));
     $('headerAutoFillShift').textContent = '自動入力';
     $('headerShiftActions').insertAdjacentHTML('beforeend', '<button class="header-status" id="headerShiftStatus" type="button">シフト提出状況</button><button class="header-submit" id="headerSubmitShift" type="button">シフト提出</button>');
