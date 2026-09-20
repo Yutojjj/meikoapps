@@ -1,0 +1,12 @@
+{
+  "name": "まなび塾 管理",
+  "short_name": "まなび塾",
+  "description": "学習塾の授業・メンバー・シフト管理アプリ",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fffdf7",
+  "theme_color": "#0b83c5",
+  "icons": [
+    { "src": "./app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
