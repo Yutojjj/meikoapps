@@ -526,7 +526,7 @@
     .quiz-print-controls { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 18px; color:#fff; background:#16354d; font-weight:900; }
     .quiz-print-controls button { padding:8px 13px; border:0; border-radius:7px; color:#16354d; background:#fff; cursor:pointer; font-weight:900; }
     .quiz-print-sheet-wrap { overflow:auto; padding:22px; }
-    .quiz-print-sheet { box-sizing:border-box; width:210mm; min-height:297mm; margin:auto; padding:0; color:#111; background:#fff; box-shadow:0 2px 10px rgba(0,0,0,.14); font-family:"Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; }
+    .quiz-print-sheet { box-sizing:border-box; width:210mm; min-height:297mm; margin:auto; padding:0; color:#111; background:#fff; box-shadow:0 2px 10px rgba(0,0,0,.14); font-family:"Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; page:quiz-print; }
     #printRoot { display:none; }
     .quiz-print-sheet h1 { margin:0 0 10mm; font-size:21pt; text-align:center; letter-spacing:.08em; }
     .quiz-print-meta { display:grid; grid-template-columns:auto auto 1fr; gap:10px; align-items:center; margin-bottom:13mm; padding-bottom:5mm; border-bottom:1.5px solid #222; font-size:12pt; white-space:nowrap; }
@@ -583,7 +583,9 @@
     .equation-system-lines { display:flex; flex-direction:column; gap:3px; line-height:1.15; }
     @media print { .math-fraction { color:#000; } }
     @media print {
-      @page { size:A4 landscape; margin:0; }
+      @page { size:A4 portrait; margin:0; }
+      @page quiz-print { size:A4 portrait; margin:0; }
+      @page shift-print { size:A4 landscape; margin:0; }
       body > * { display:none !important; }
       /* 画面内のプレビューは印刷せず、#printRoot に複製した一部だけを印刷する。 */
       #quizPrintModal { display:none !important; }
@@ -591,9 +593,11 @@
       .quiz-print-preview, .quiz-print-sheet-wrap { display:block !important; width:auto !important; max-height:none !important; overflow:visible !important; padding:0 !important; border-radius:0 !important; box-shadow:none !important; background:#fff !important; }
       .quiz-print-controls { display:none !important; }
       .quiz-print-sheet { box-sizing:border-box !important; width:auto !important; min-height:0 !important; margin:0 !important; padding:0 !important; box-shadow:none !important; }
-      .quiz-print-page { box-sizing:border-box !important; width:210mm !important; height:297mm !important; min-height:0 !important; margin:0 !important; padding:18mm 17mm !important; }.quiz-print-page + .quiz-print-page { margin:0 !important; border:0 !important; break-before:page; page-break-before:always; }
+      .quiz-print-page { box-sizing:border-box !important; width:210mm !important; height:297mm !important; min-height:0 !important; margin:0 !important; padding:16mm 15mm !important; overflow:hidden !important; break-after:auto; page-break-after:auto; }
+      .quiz-print-page + .quiz-print-page { margin:0 !important; border:0 !important; break-before:page; page-break-before:always; }
+      .quiz-print-page:last-child { break-after:avoid !important; page-break-after:avoid !important; }
       #printRoot, .shift-print-sheet, .shift-print-member { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-      .shift-print-sheet { width:297mm !important; min-height:210mm !important; margin:0 !important; padding:7mm 8mm !important; box-shadow:none !important; }
+      .shift-print-sheet { page:shift-print; width:297mm !important; min-height:210mm !important; margin:0 !important; padding:7mm 8mm !important; box-shadow:none !important; }
     }
     .monthly-calendar { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); border:1px solid var(--line); background:#fff; }
     .monthly-weekday { padding:10px 4px; border-right:1px solid var(--line); border-bottom:1px solid var(--line); text-align:center; font-weight:900; background:#f7fafb; }
