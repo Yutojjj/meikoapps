@@ -704,8 +704,15 @@
       .shift-week div { padding: 7px 2px; font-size: 11px; }
       .shift-cell { min-height: 0; padding: 4px 0; }
       .shift-date { font-size: 12px; }
+      .shift-cell-top { display:block; margin:0 3px 3px; }
+      .shift-cell-top small { display:block; margin-top:2px; font-size:9px; line-height:1.1; white-space:nowrap; }
       .shift-entry { margin-top: 0; padding: 4px 3px; font-size: 9px; }
       .shift-entry small { font-size: 8px; }
+      .monthly-cell { min-height:92px; padding:5px 3px; }
+      .monthly-date { top:5px; right:3px; left:3px; font-size:13px; }
+      .monthly-summary { gap:2px; margin-top:24px; font-size:9px; line-height:1.1; }
+      .monthly-summary span { gap:2px; white-space:nowrap; }
+      .monthly-summary .status { padding:2px 3px; font-size:8px; }
       .section-head { align-items: flex-start; flex-direction: column; }
       .student-row { grid-template-columns: minmax(0, 1fr) 180px; gap: 10px; padding: 12px 14px; }
       .lesson { padding-left: 0; }
@@ -737,6 +744,14 @@
       .modal-actions { gap: 8px; padding: 10px 16px 14px; }
       .modal-actions button { min-height: 48px; font-size: 15px; }
       .shift-view { width:100vw; margin:0 0 0 calc(50% - 50vw); }
+      .topbar.shift-mode { height:64px; padding:0 6px; }
+      .topbar.shift-mode .brand { position:absolute; left:0; top:0; width:auto; height:64px; justify-content:flex-start; padding:0 0 0 46px; }
+      .topbar.shift-mode .header-title { display:block; font-size:17px; line-height:1; white-space:nowrap; }
+      .topbar.shift-mode .header-shift-actions { right:6px; gap:4px; }
+      .topbar.shift-mode .header-shift-actions button { font-size:10px; }
+      .topbar.shift-mode .header-print { width:34px; height:34px; }
+      .topbar.shift-mode .header-auto { min-width:68px; padding:8px 7px; }
+      .topbar.shift-mode .header-status { min-width:82px; padding:8px 7px; }
     }
   </style>
 </head>
@@ -1336,6 +1351,9 @@
           Object.keys(shiftAssignments).forEach(key => delete shiftAssignments[key]);
           shiftAssignmentSnapshot.docs.forEach(item => { const value = item.data(); const date = value.date || item.id; if (date) shiftAssignments[date] = Array.isArray(value.assignments) ? value.assignments : []; });
           localStorage.setItem('jukuShiftAssignments', JSON.stringify(shiftAssignments));
+        } else if (Object.keys(shiftAssignments).length) {
+          // 旧端末のローカル保存分を一度だけFirebaseへ移し、別端末でも同じシフトを表示できるようにする。
+          await saveFirebaseShiftAssignments();
         }
         render(); renderMonthly(); renderAccounts(); renderShifts(); renderQuizBank();
       } catch (error) {
