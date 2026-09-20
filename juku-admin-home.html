@@ -1455,6 +1455,19 @@
       requestAnimationFrame(() => window.print());
     }
     function printCurrentSheet() { printPreparedSheet($('quizPrintSheet').innerHTML, $('quizPrintSheet').className || 'quiz-print-sheet'); }
+    function localQuizHistoryFor(student) {
+      const history = readStoredJSON(`jukuQuizHistory:${quizStudentId(student)}`, []);
+      return Array.isArray(history) ? history : [];
+    }
+    async function loadQuizHistoryForPrint(student) {
+      try {
+        if (typeof getDocs === 'function' && typeof collection === 'function' && typeof doc === 'function' && typeof db !== 'undefined') {
+          const results = await getDocs(collection(doc(db, 'quizProgress', quizStudentId(student)), 'results'));
+          return results.docs.map(item => item.data());
+        }
+      } catch (error) { console.warn('印刷用のFirebase履歴取得に失敗したためローカル履歴を使用します', error); }
+      return localQuizHistoryFor(student);
+    }
     function openShiftPrint() {
       const year = shiftMonthDate.getFullYear(); const month = shiftMonthDate.getMonth();
       const first = new Date(year, month, 1).getDay(); const total = new Date(year, month + 1, 0).getDate();
@@ -1832,14 +1845,16 @@
       printCurrentSheet();
     }
     async function openDailyQuizPrint() {
-      if (!quizSections.length) await refreshQuizBank();
+      if (!quizSections.length) {
+        await refreshQuizBank();
+        if (!quizSections.length) quizSections = ['中1', '中2', '中3'].flatMap(buildQuizSections);
+      }
       const visits = slotsForDay().flatMap(slot => accountStudentsForDateSlot(currentDate, slot).map(student => ({ student, slot }))).filter(({ student }) => Boolean(quizGradeFor(student)));
-      if (!visits.length) return;
+      if (!visits.length) { showToast('この日に印刷できる中学生の授業がありません'); return; }
       const visitsByStudent = visits.reduce((all, visit) => { const key = quizStudentId(visit.student); if (!all[key]) all[key] = []; all[key].push(visit); return all; }, {});
       const pages = (await Promise.all(Object.values(visitsByStudent).map(async studentVisits => {
         const student = studentVisits[0].student;
-        const results = await getDocs(collection(doc(db, 'quizProgress', quizStudentId(student)), 'results'));
-        const history = results.docs.map(item => item.data());
+        const history = await loadQuizHistoryForPrint(student);
         const sections = getQuizSectionsForPrint(quizGradeFor(student), history, studentVisits.length);
         return sections.map(section => quizPrintPageMarkup(section, student.name, dateText(currentDate)));
       }))).flat();
@@ -1892,8 +1907,8 @@
       if (!selectedStudents.length) return;
       const printedDate = `${new Date().getFullYear()}年${new Date().getMonth() + 1}月${new Date().getDate()}日`;
       const reports = await Promise.all(selectedStudents.map(async student => {
-        const results = await getDocs(collection(doc(db, 'quizProgress', quizStudentId(student)), 'results'));
-        const stats = quizAnalysisStats(results.docs.map(item => item.data()));
+        const history = await loadQuizHistoryForPrint(student);
+        const stats = quizAnalysisStats(history);
         const topics = Object.entries(stats.topicStats).sort(([, left], [, right]) => left.correct / left.total - right.correct / right.total).map(([topic, stat]) => `<tr><td>${topic}</td><td>${stat.correct}/${stat.total}</td><td>${Math.round(stat.correct / stat.total * 100)}%</td></tr>`).join('') || '<tr><td colspan="3">採点記録はまだありません</td></tr>';
         return { grade:student.detail, html:`<article class="analysis-print-person"><div class="analysis-print-person-head"><strong>${student.name}</strong><span>${student.detail}・数学</span></div><div class="analysis-print-summary"><div>採点<strong>${stats.completed.length}回</strong></div><div>正答<strong>${stats.totalCorrect}/${stats.totalQuestions}問</strong></div><div>正答率<strong>${stats.rate}%</strong></div></div><h2>全体の得点率推移</h2><div class="analysis-print-trend">${renderQuizTrendChart(stats.completed)}</div><h2>分野別の到達度</h2><table class="analysis-print-table"><thead><tr><th>分野</th><th>正答</th><th>率</th></tr></thead><tbody>${topics}</tbody></table></article>` };
       }));
@@ -2103,7 +2118,7 @@
 
     $('prevDay').addEventListener('click', () => { currentDate.setDate(currentDate.getDate() - 1); render(); });
     $('nextDay').addEventListener('click', () => { currentDate.setDate(currentDate.getDate() + 1); render(); });
-    $('dailyQuizPrint').addEventListener('click', openDailyQuizPrint);
+    $('dailyQuizPrint').addEventListener('click', () => openDailyQuizPrint().catch(error => { console.error('Daily quiz print failed', error); showToast('印刷データの作成に失敗しました'); }));
     $('dateLabel').addEventListener('click', () => {
       calendarMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
       renderCalendar();
@@ -2217,7 +2232,7 @@
     $('closeModal').addEventListener('click', closeAccountModal);
     $('cancelModal').addEventListener('click', closeAccountModal);
     $('deleteAccount').addEventListener('click', requestAccountDelete);
-    $('printSelectedAnalysis').addEventListener('click', printSelectedAnalyses);
+    $('printSelectedAnalysis').addEventListener('click', () => printSelectedAnalyses().catch(error => { console.error('Analysis print failed', error); showToast('分析の印刷データ作成に失敗しました'); }));
     $('accountModal').addEventListener('click', event => { if (event.target === $('accountModal')) closeAccountModal(); });
     document.querySelectorAll('input[name="accountType"]').forEach(input => input.addEventListener('change', updateAccountForm));
     document.querySelectorAll('.level-tab').forEach(tab => tab.addEventListener('click', () => {
