@@ -57,7 +57,7 @@
     .home-back { position: absolute; left: 0; width: 44px; height: 44px; border: 0; border-radius: 50%; color: transparent; background: transparent; cursor: pointer; font-size: 0; }
     .home-back::before { content: ""; position: absolute; top: 16px; left: 18px; width: 10px; height: 10px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(45deg); }
     .home-back:hover { background: rgba(35, 83, 103, .12); }
-    .header-title { font-size: 18px; letter-spacing: .04em; }
+    .header-title { font-size: 18px; letter-spacing: .04em; white-space:nowrap; }
     .header-side { display: flex; align-items: center; gap: 8px; }
     .header-side > .role-chip, .header-side > .avatar { display:none; }
     .header-shift-actions { position:absolute; right:12px; z-index:3; display:none; align-items:center; gap:8px; white-space:nowrap; }
@@ -708,11 +708,40 @@
       .shift-cell-top small { display:block; margin-top:2px; font-size:9px; line-height:1.1; white-space:nowrap; }
       .shift-entry { margin-top: 0; padding: 4px 3px; font-size: 9px; }
       .shift-entry small { font-size: 8px; }
+      .shift-entry { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:2px; padding:3px 1px; font-size:8px; line-height:1.1; }
+      .shift-entry span, .shift-entry small { min-width:0; white-space:nowrap; }
+      .shift-entry small { font-size:8px; letter-spacing:-.04em; }
       .monthly-cell { min-height:92px; padding:5px 3px; }
       .monthly-date { top:5px; right:3px; left:3px; font-size:13px; }
       .monthly-summary { gap:2px; margin-top:24px; font-size:9px; line-height:1.1; }
       .monthly-summary span { gap:2px; white-space:nowrap; }
       .monthly-summary .status { padding:2px 3px; font-size:8px; }
+      .monthly-detail-card { width:calc(100vw - 18px); padding:0 14px 16px; border-radius:18px; }
+      .monthly-detail-head { margin:0 -14px 12px; padding:18px 44px 13px 14px; }
+      .monthly-detail-head h2 { font-size:20px; }
+      .monthly-detail-slot { margin-top:10px; padding:10px; }
+      .monthly-detail-tabs { gap:5px; margin-bottom:10px; }
+      .monthly-detail-tab { padding:8px 4px; font-size:16px; }
+      .monthly-teacher-card { margin:8px 0; padding:9px; }
+      .monthly-student-row { grid-template-columns:minmax(54px,.8fr) minmax(0,1fr) minmax(0,1fr) 28px; gap:4px; padding:7px 0; font-size:12px; }
+      .monthly-student-row > span { min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      .monthly-subject-select, .monthly-teacher-select { min-width:0; width:100%; height:32px; padding:0 3px; font-size:11px; }
+      .monthly-student-row .student-remove { width:28px; height:28px; }
+      .period-picker-card { width:calc(100vw - 18px); max-height:calc(100vh - 16px); border-radius:18px; }
+      .period-picker-card .monthly-detail-head { padding:18px 44px 13px 14px; }
+      .period-picker-body { padding:14px 12px 16px; }
+      .period-fields { gap:7px; margin-bottom:12px; }
+      .period-fields label { padding:9px; border-radius:12px; font-size:14px; }
+      .period-fields input { margin-top:4px; font-size:15px; white-space:nowrap; }
+      .period-calendar-head { gap:8px; font-size:16px; }
+      .period-calendar-head button { width:38px; height:38px; }
+      .period-calendar-head button::before { top:12px; }
+      #periodPrevMonth::before { left:14px; }
+      #periodNextMonth::before { right:14px; }
+      .period-calendar { gap:1px; }
+      .period-calendar span { padding:4px 1px; font-size:12px; }
+      .period-calendar button { min-height:34px; font-size:14px; }
+      .period-apply { margin-top:12px; padding:12px; font-size:15px; }
       .section-head { align-items: flex-start; flex-direction: column; }
       .student-row { grid-template-columns: minmax(0, 1fr) 180px; gap: 10px; padding: 12px 14px; }
       .lesson { padding-left: 0; }
@@ -1371,7 +1400,14 @@
     function idForFirebase(value) { return value.toLowerCase().replace(/[^a-z0-9ぁ-んァ-ヶ一-龠]+/g, '-'); }
     function persistFirebase(saveFn) { if (typeof saveFn !== 'function') return; firebaseImportsPromise.then(ready => { if (ready) return saveFn(); }).catch(error => { console.error('Firebase保存失敗', error); showToast(`Firebase保存失敗（${error?.code || '接続エラー'}）`); }); }
     const previewStaff = '佐藤先生';
-    function registeredStaffNames() { return accounts.filter(account => account.type === 'parttime' && account.name).map(account => account.name); }
+    function registeredStaffNames() {
+      // シフトの表示は users の読込状況に依存させず、teachers コレクションも候補に含める。
+      // 端末によって users のキャッシュや読込順が違っても、Firebaseに保存されたシフトを落とさないため。
+      return [...new Set([
+        ...accounts.filter(account => account.type === 'parttime' && account.name).map(account => account.name),
+        ...teachers.filter(Boolean)
+      ])];
+    }
     function dateKeyFor(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`; }
     function scheduledStaffNames(dateKey, slot) { const staffNames = registeredStaffNames(); return (shiftAssignments[dateKey] || []).filter(item => staffNames.includes(item.teacher) && (item.slots || []).includes(slot)).map(item => item.teacher); }
     function activeLongBreaksForDate(date) { const key = dateKeyFor(date); return longBreaks.filter(item => item.start <= key && key <= item.end); }
