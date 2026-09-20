@@ -772,26 +772,6 @@
     <button class="bottom-tab" data-view="other"><span class="tab-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg></span>その他</button>
   </div>
   <div class="login-backdrop" id="loginModal"><form class="login-card" id="loginForm"><h1>生徒管理アプリ</h1><p class="login-description">管理画面にログインしてください。</p><label for="loginId">ID</label><input id="loginId" type="text" inputmode="text" autocomplete="username" placeholder="admin" required><label for="loginPassword">パスワード</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="admin" required><p class="login-error" id="loginError" role="alert"></p><button class="login-submit" type="submit">ログイン</button></form></div>
-  <script>
-    (() => {
-      const form = document.getElementById('loginForm');
-      const modal = document.getElementById('loginModal');
-      const error = document.getElementById('loginError');
-      if (!form || !modal || !error) return;
-      form.addEventListener('submit', event => {
-        event.preventDefault();
-        const id = document.getElementById('loginId').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        if (id !== 'admin' || password !== 'admin') {
-          error.textContent = 'IDまたはパスワードが違います。';
-          return;
-        }
-        localStorage.setItem('studentAppDemoLoggedIn', '1');
-        modal.classList.add('hidden');
-      });
-      if (localStorage.getItem('studentAppDemoLoggedIn') === '1') modal.classList.add('hidden');
-    })();
-  </script>
   <div class="modal-backdrop hidden" id="shiftEditModal"><form class="shift-edit-card shift-edit-layout" id="shiftEditForm"><div class="shift-edit-header"><div><h2>シフト編集</h2><p id="shiftEditDate">日付を選択</p></div><button type="button" id="closeShiftEdit" class="shift-close">×</button></div><div class="shift-edit-body"><div class="decided-shifts"><h3>決定したシフト</h3><div id="decidedShiftCards"></div></div><div class="shift-staff-list"><h3>スタッフ</h3><div id="shiftStaffOptions"></div></div></div><div class="shift-edit-actions"><button class="cancel" id="shiftCancelBottom" type="button">キャンセル</button><button class="save" type="submit">保存して閉じる</button></div></form></div>
   <div class="modal-backdrop hidden" id="monthPickerModal"><div class="month-picker-card"><div class="month-picker-head"><h2>月を選択</h2><button type="button" class="month-picker-close" id="closeMonthPicker">×</button></div><div class="month-picker-label">月</div><div class="month-picker-grid" id="monthPickerGrid"></div><button type="button" class="month-picker-confirm" id="confirmMonthPicker">決定</button></div></div>
   <div class="modal-backdrop hidden" id="studentPickerModal"><div class="student-picker"><div class="student-picker-head"><h2>生徒を追加</h2><button type="button" class="student-picker-close" id="closeStudentPicker">×</button></div><div class="student-picker-filters"><input id="studentPickerSearch" placeholder="生徒名で検索"><select id="studentPickerGrade"><option value="">学年すべて</option><option>小学1年</option><option>小学2年</option><option>小学3年</option><option>小学4年</option><option>小学5年</option><option>小学6年</option><option>中学1年</option><option>中学2年</option><option>中学3年</option><option>高校1年</option><option>高校2年</option><option>高校3年</option></select></div><div class="student-picker-list" id="studentPickerList"></div><button type="button" class="student-picker-confirm" id="confirmStudentPicker">決定</button></div></div>
@@ -849,22 +829,9 @@
   <div class="modal-backdrop hidden" id="longBreakModal"><div class="shift-submit-modal"><div class="monthly-detail-head"><h2 id="longBreakModalTitle">長期休みを作成</h2><button type="button" class="monthly-detail-close" id="closeLongBreak">×</button></div><div class="break-modal-body"><label>名称<input id="longBreakName" placeholder="例：夏期講習"></label><div class="period-fields"><label>開始日<input id="longBreakStart" type="date"></label><label>終了日<input id="longBreakEnd" type="date"></label></div><button type="button" class="subject-add" id="openBreakPeriodPicker">カレンダーで期間を選ぶ</button><div class="break-slot-groups"><div class="break-slot-group"><strong>平日のコマ</strong><div class="break-slot-buttons" id="weekdayBreakSlots"></div></div><div class="break-slot-group"><strong>土曜日のコマ</strong><div class="break-slot-buttons" id="saturdayBreakSlots"></div></div></div><h3 class="form-section-title">追加する生徒</h3><div class="break-member-list" id="breakMemberList"></div><h3 class="form-section-title">追加授業</h3><p class="account-sub">選択した生徒全員に、この曜日・コマ・科目の授業を期間中に追加します。</p><div class="break-lesson-rows" id="breakLessonRows"></div><button type="button" class="add-schedule" id="addBreakLesson">＋ 追加授業を加える</button></div><div class="modal-actions"><button type="button" id="cancelLongBreak">キャンセル</button><button type="button" class="primary" id="saveLongBreak">保存する</button></div></div></div>
   <div class="modal-backdrop hidden" id="logoutModal"><div class="logout-card"><h2>ログアウトしますか？</h2><p>再度利用するにはログインが必要です。</p><div class="logout-actions"><button type="button" id="cancelLogout">キャンセル</button><button type="button" class="logout-confirm" id="confirmLogout">ログアウト</button></div></div></div>
 
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
-    import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
-
-    const firebaseConfig = {
-      apiKey: 'AIzaSyBBQkzTqsDiY6TvxdnWw4gMB36Fj2NUIA8',
-      authDomain: 'juku-117e4.firebaseapp.com',
-      projectId: 'juku-117e4',
-      storageBucket: 'juku-117e4.firebasestorage.app',
-      messagingSenderId: '830179126970',
-      appId: '1:830179126970:web:b032da4c237f235fd39c83',
-      measurementId: 'G-GDKXEBGE7C'
-    };
-    const firebaseApp = initializeApp(firebaseConfig);
-    const db = getFirestore(firebaseApp);
-    window.jukuFirebase = { app: firebaseApp, db };
+  <script>
+    // 現在は仮運用。外部サービスに依存せず、このHTMLだけで起動する。
+    window.jukuFirebase = null;
     let appStarted = false;
     const slotTimes = {
       S: '13:45〜15:15', A: '15:20〜16:50', B: '16:55〜18:25',
@@ -1306,7 +1273,7 @@
     async function saveFirebaseLongBreaks() { await setDoc(doc(db, 'appSettings', 'longBreaks'), { items:longBreaks, updatedAt:new Date().toISOString() }); }
     async function saveFirebaseSubjectSettings() { await setDoc(doc(db, 'appSettings', 'subjectSettings'), { subjectsByLevel, videoSubjects, updatedAt:new Date().toISOString() }); }
     function idForFirebase(value) { return value.toLowerCase().replace(/[^a-z0-9ぁ-んァ-ヶ一-龠]+/g, '-'); }
-    function persistFirebase(task) { task().catch(error => { console.error('Firebase save failed', error); showToast(`Firebase保存失敗（${error?.code || 'unknown'}）`); }); }
+    function persistFirebase() {}
     const previewStaff = '佐藤先生';
     function registeredStaffNames() { return accounts.filter(account => account.type === 'parttime' && account.name).map(account => account.name); }
     function dateKeyFor(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`; }
@@ -2063,29 +2030,20 @@
     }));
     $('addAccountBtn').addEventListener('click', openAccountModal);
     $('homeBack').addEventListener('click', () => switchView(returnView));
-    async function startApp() {
+    function startApp() {
       if (appStarted) return;
       appStarted = true;
       $('loginModal').classList.add('hidden');
       switchView('dashboard');
-      try {
-        await seedFirebaseDemoData();
-        await seedDefaultCurriculumSettings();
-        await loadFirebaseData();
-        await seedFullQuizBank();
-        await refreshQuizBank();
-      } catch (error) {
-        console.error('アプリ初期化失敗', error);
-        showToast('データの読み込みに失敗しました。通信状態を確認してください');
-      }
     }
-    $('loginForm').addEventListener('submit', async event => {
+    $('loginForm').addEventListener('submit', event => {
       event.preventDefault();
       const loginId = $('loginId').value.trim();
       const password = $('loginPassword').value;
       $('loginError').textContent = '';
       if (loginId !== 'admin' || password !== 'admin') { $('loginError').textContent = 'IDまたはパスワードが違います。'; return; }
-      await startApp();
+      localStorage.setItem('studentAppDemoLoggedIn', '1');
+      startApp();
     });
     $('selectAllAnalysis').addEventListener('click', () => { const eligible = accounts.filter(account => account.type === 'student' && quizGradeFor(account)); const allSelected = eligible.length > 0 && analysisSelection.size === eligible.length; analysisSelection = allSelected ? new Set() : new Set(eligible.map(account => String(accounts.indexOf(account)))); renderAnalysisView(); });
     $('openQuizLibrary').addEventListener('click', () => { returnView = 'other'; switchView('quizzes'); });
