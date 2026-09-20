@@ -786,9 +786,10 @@
           error.textContent = 'IDまたはパスワードが違います。';
           return;
         }
-        sessionStorage.setItem('studentAppDemoLoggedIn', '1');
+        localStorage.setItem('studentAppDemoLoggedIn', '1');
         modal.classList.add('hidden');
       });
+      if (localStorage.getItem('studentAppDemoLoggedIn') === '1') modal.classList.add('hidden');
     })();
   </script>
   <div class="modal-backdrop hidden" id="shiftEditModal"><form class="shift-edit-card shift-edit-layout" id="shiftEditForm"><div class="shift-edit-header"><div><h2>シフト編集</h2><p id="shiftEditDate">日付を選択</p></div><button type="button" id="closeShiftEdit" class="shift-close">×</button></div><div class="shift-edit-body"><div class="decided-shifts"><h3>決定したシフト</h3><div id="decidedShiftCards"></div></div><div class="shift-staff-list"><h3>スタッフ</h3><div id="shiftStaffOptions"></div></div></div><div class="shift-edit-actions"><button class="cancel" id="shiftCancelBottom" type="button">キャンセル</button><button class="save" type="submit">保存して閉じる</button></div></form></div>
@@ -2099,7 +2100,7 @@
     $('saveLongBreak').addEventListener('click', () => { const name = $('longBreakName').value.trim(); const start = $('longBreakStart').value; const end = $('longBreakEnd').value; if (!name || !start || !end || start > end || !breakMemberSelection.size || !breakLessonRows.length || !window.breakWeekdaySlots.length || !window.breakSaturdaySlots.length) return showToast('名称・期間・コマ・生徒・追加授業を設定してください'); longBreaks.push({ id:Date.now().toString(36), name, start, end, weekdaySlots:[...window.breakWeekdaySlots], saturdaySlots:[...window.breakSaturdaySlots], members:[...breakMemberSelection], lessons:breakLessonRows.map(row => ({ ...row })) }); localStorage.setItem('jukuLongBreaks', JSON.stringify(longBreaks)); persistFirebase(saveFirebaseLongBreaks); $('longBreakModal').classList.add('hidden'); renderLongBreakList(); render(); renderMonthly(); renderShifts(); showToast(`${name}を保存しました`); });
     $('openLogout').addEventListener('click', () => $('logoutModal').classList.remove('hidden'));
     $('cancelLogout').addEventListener('click', () => $('logoutModal').classList.add('hidden'));
-    $('confirmLogout').addEventListener('click', async () => { appStarted = false; sessionStorage.removeItem('studentAppDemoLoggedIn'); $('logoutModal').classList.add('hidden'); $('loginId').value = ''; $('loginPassword').value = ''; $('loginError').textContent = ''; $('loginModal').classList.remove('hidden'); showToast('ログアウトしました'); });
+    $('confirmLogout').addEventListener('click', async () => { appStarted = false; localStorage.removeItem('studentAppDemoLoggedIn'); $('logoutModal').classList.add('hidden'); $('loginId').value = ''; $('loginPassword').value = ''; $('loginError').textContent = ''; $('loginModal').classList.remove('hidden'); showToast('ログアウトしました'); });
     document.querySelectorAll('[data-open-analysis]').forEach(button => button.addEventListener('click', openAnalysisModal));
     $('headerAutoFillShift').textContent = '自動入力';
     $('headerShiftActions').insertAdjacentHTML('beforeend', '<button class="header-status" id="headerShiftStatus" type="button">シフト提出状況</button><button class="header-submit" id="headerSubmitShift" type="button">シフト提出</button>');
@@ -2181,6 +2182,7 @@
     updateAccountForm();
     if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(error => console.warn('Service worker registration failed', error)));
     loadQuizCache();
+    if (localStorage.getItem('studentAppDemoLoggedIn') === '1') startApp();
   </script>
 </body>
 </html>
