@@ -851,12 +851,9 @@
   <div class="modal-backdrop hidden" id="subjectAddModal"><form class="subject-add-modal" id="subjectAddForm"><h2 id="subjectAddTitle">科目を追加</h2><label>科目名<input id="subjectAddName" placeholder="例：プログラミング" required></label><div class="subject-add-actions"><button type="button" id="cancelSubjectAdd">キャンセル</button><button type="submit" class="primary">追加する</button></div></form></div>
   <div class="modal-backdrop hidden" id="logoutModal"><div class="logout-card"><h2>ログアウトしますか？</h2><p>再度利用するにはログインが必要です。</p><div class="logout-actions"><button type="button" id="cancelLogout">キャンセル</button><button type="button" class="logout-confirm" id="confirmLogout">ログアウト</button></div></div></div>
 
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
-    import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
-    const firebaseApp = initializeApp({ apiKey:'AIzaSyBBQkzTqsDiY6TvxdnWw4gMB36Fj2NUIA8', authDomain:'juku-117e4.firebaseapp.com', projectId:'juku-117e4', storageBucket:'juku-117e4.firebasestorage.app', messagingSenderId:'830179126970', appId:'1:830179126:web:b032da4c237f235fd39c83' });
-    const db = getFirestore(firebaseApp);
-    window.jukuFirebase = { app:firebaseApp, db };
+  <script>
+    // 仮ログイン中は外部接続を使わず、ブラウザ内に平文保存する。
+    window.jukuFirebase = null;
     let appStarted = false;
     const slotTimes = {
       S: '13:45〜15:15', A: '15:20〜16:50', B: '16:55〜18:25',
@@ -1301,7 +1298,7 @@
     async function saveFirebaseLongBreaks() { await setDoc(doc(db, 'appSettings', 'longBreaks'), { items:longBreaks, updatedAt:new Date().toISOString() }); }
     async function saveFirebaseSubjectSettings() { await setDoc(doc(db, 'appSettings', 'subjectSettings'), { subjectsByLevel, videoSubjects, updatedAt:new Date().toISOString() }); }
     function idForFirebase(value) { return value.toLowerCase().replace(/[^a-z0-9ぁ-んァ-ヶ一-龠]+/g, '-'); }
-    function persistFirebase(task) { task().catch(error => { console.error('Firebase save failed', error); showToast(`Firebase保存失敗（${error?.code || 'unknown'}）`); }); }
+    function persistFirebase() {}
     const previewStaff = '佐藤先生';
     function registeredStaffNames() { return accounts.filter(account => account.type === 'parttime' && account.name).map(account => account.name); }
     function dateKeyFor(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`; }
@@ -2133,13 +2130,11 @@
     }));
     $('addAccountBtn').addEventListener('click', openAccountModal);
     $('homeBack').addEventListener('click', () => { const target = returnView; returnView = 'dashboard'; switchView(target); });
-    async function startApp() {
+    function startApp() {
       if (appStarted) return;
       appStarted = true;
       $('loginModal').classList.add('hidden');
       switchView('dashboard');
-      try { await loadFirebaseData(); await refreshQuizBank(); }
-      catch (error) { console.error('Firebase initialization failed', error); showToast('Firebaseの読み込みに失敗しました。ローカル表示を続けます。'); }
     }
     $('loginForm').addEventListener('submit', event => {
       event.preventDefault();
