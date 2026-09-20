@@ -37,11 +37,12 @@
     button { color: inherit; }
 
     .topbar {
-      position: fixed;
+      position: fixed !important;
       top: 0;
       right: 0;
       left: 0;
-      z-index: 20;
+      z-index: 100;
+      transform: translateZ(0);
       height: 68px;
       display: flex;
       align-items: center;
@@ -210,6 +211,8 @@
     .date-label { width: 100%; min-width: 0; height: 48px; padding: 0 18px; border: 1px solid #a7cfda; border-radius: 14px; text-align: center; white-space: nowrap; font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; background: #fff; color: #345d6b; cursor: pointer; }
     .date-label:hover { background: #e2f1f4; }
     #monthlyView .date-nav { padding-right:0; }
+    #dashboardView .date-nav { grid-template-columns:52px minmax(240px,300px) 52px; }
+    #monthlyView .date-nav { grid-template-columns:52px minmax(140px,180px) 52px; }
     .date-nav > button.daily-quiz-print { position:absolute; top:5px; right:0; display:grid; place-items:center; width:42px; height:42px; padding:0; border:1px solid #0b83c5; border-radius:50%; color:#0b83c5; background:#fff; cursor:pointer; font-size:0; }
     .daily-quiz-print::before { content:none !important; }.daily-quiz-print:hover { color:#fff; background:#0b83c5; }.daily-quiz-print svg { width:20px; height:20px; }
     .date-picker-hidden { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
@@ -445,7 +448,7 @@
     .modal-actions .primary { color: white; background: #55a463; }
     .modal-actions .primary:hover { background: #438d51; }
     .modal-actions .modal-delete { color:#c94f58; background:#fff0f1; }.modal-actions .modal-delete:hover { color:#fff; background:#c94f58; }
-    .bottom-tabs { position: fixed; right: 0; bottom: 0; left: 0; z-index: 20; display: flex; justify-content:stretch; height:calc(66px + env(safe-area-inset-bottom)); padding-bottom:env(safe-area-inset-bottom); border-top: 1px solid var(--line); background: rgba(255,255,255,.98); box-shadow:0 -4px 14px rgba(23,40,58,.08); backdrop-filter: blur(8px); }
+    .bottom-tabs { position: fixed !important; right: 0; bottom: 0; left: 0; z-index: 100; display: flex; justify-content:stretch; height:calc(66px + env(safe-area-inset-bottom)); padding-bottom:env(safe-area-inset-bottom); border-top: 1px solid var(--line); background: rgba(255,255,255,.98); box-shadow:0 -4px 14px rgba(23,40,58,.08); backdrop-filter: blur(8px); transform: translateZ(0); }
     .bottom-tab { position:relative; width:auto; flex:1 1 0; max-width:none; min-width:0; padding:8px 3px 6px; border:0; background:transparent; color:#71808b; cursor:pointer; font-size:10px; font-weight:900; white-space:nowrap; }
     .bottom-tab .tab-icon { display:block; width:25px; height:25px; margin:0 auto 3px; color:currentColor; font-size:23px; line-height:25px; }
     .bottom-tab .tab-icon svg { display:block; width:25px; height:25px; margin:auto; }
@@ -496,7 +499,7 @@
     .shift-actions { display:flex; gap:8px; }
     .shift-action { padding:10px 14px; border:0; border-radius:9px; color:#fff; background:#4f93b1; cursor:pointer; font-weight:900; }
     .shift-action.secondary { color:#477487; background:#eaf5f7; }
-    .monthly-view { width:100%; padding-bottom:80px; }
+    .monthly-view { position:relative; z-index:0; width:100%; min-height:calc(100vh - 68px); padding-bottom:100px; }
     .quiz-view { max-width:900px; margin:0 auto; padding:20px 16px 96px; }
     .quiz-library-head { display:flex; align-items:end; justify-content:space-between; gap:12px; margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid #dce2e7; }
     .quiz-library-head h2 { margin:0; font-size:23px; }
@@ -682,11 +685,13 @@
       .page-head { margin-bottom: 10px; }
       .date-nav { margin-top: 6px; width:100%; grid-template-columns:42px minmax(0, 1fr) 42px; gap: 6px; padding-right:46px; }
       #monthlyView .date-nav { padding-right:0; grid-template-columns:42px minmax(0, 1fr) 42px; }
+      #dashboardView .date-nav { grid-template-columns:42px minmax(220px,1fr) 42px; padding-right:46px; }
+      #monthlyView .date-nav { grid-template-columns:42px minmax(140px,180px) 42px; }
       .date-nav > button:not(.date-label) { width: 48px; height: 48px; }
       .date-nav > button:not(.date-label)::before { top: 17px; width: 12px; height: 12px; }
       #prevDay::before { left: 18px; }
       #nextDay::before { right: 18px; }
-      .date-label { height: 48px; padding: 0 4px; font-size: 15px; }
+      .date-label { height: 48px; padding: 0 8px; font-size: 15px; }
       .date-nav > button.daily-quiz-print { top:5px; width:38px; height:38px; }
       .analysis-student-list { grid-template-columns:1fr; }
       .subject-settings-grid, .break-member-list, .break-slot-groups { grid-template-columns:1fr; }
