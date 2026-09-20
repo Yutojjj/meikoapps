@@ -209,6 +209,7 @@
     #monthlyNext::before { right:18px; transform:rotate(225deg); }
     .date-nav > button:not(.date-label):hover { background: #e2f1f4; }
     .date-label { width: 100%; min-width: 0; height: 48px; padding: 0 18px; border: 1px solid #a7cfda; border-radius: 14px; text-align: center; white-space: nowrap; font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; background: #fff; color: #345d6b; cursor: pointer; }
+    .date-label { display:flex; align-items:center; justify-content:center; gap:8px; }
     .date-label:hover { background: #e2f1f4; }
     #monthlyView .date-nav { padding-right:0; }
     #dashboardView .date-nav { grid-template-columns:52px minmax(240px,300px) 52px; }
@@ -882,7 +883,7 @@
   </div>
   <div class="login-backdrop" id="loginModal"><form class="login-card" id="loginForm"><h1>生徒管理アプリ</h1><p class="login-description">管理画面にログインしてください。</p><label for="loginId">ID</label><input id="loginId" type="text" inputmode="text" autocomplete="username" placeholder="admin" required><label for="loginPassword">パスワード</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="admin" required><p class="login-error" id="loginError" role="alert"></p><button class="login-submit" type="submit">ログイン</button></form></div>
   <div class="modal-backdrop hidden" id="shiftEditModal"><form class="shift-edit-card shift-edit-layout" id="shiftEditForm"><div class="shift-edit-header"><div><h2>シフト編集</h2><p id="shiftEditDate">日付を選択</p></div><button type="button" id="closeShiftEdit" class="shift-close">×</button></div><div class="shift-edit-body"><div class="decided-shifts"><h3>決定したシフト</h3><div id="decidedShiftCards"></div></div><div class="shift-staff-list"><h3>スタッフ</h3><div id="shiftStaffOptions"></div></div></div><div class="shift-edit-actions"><button class="cancel" id="shiftCancelBottom" type="button">キャンセル</button><button class="save" type="submit">保存して閉じる</button></div></form></div>
-  <div class="modal-backdrop hidden" id="monthPickerModal"><div class="month-picker-card"><div class="month-picker-head"><h2>月を選択</h2><button type="button" class="month-picker-close" id="closeMonthPicker">×</button></div><div class="month-picker-label">月</div><div class="month-picker-grid" id="monthPickerGrid"></div><button type="button" class="month-picker-confirm" id="confirmMonthPicker">決定</button></div></div>
+  <div class="modal-backdrop hidden" id="monthPickerModal"><div class="month-picker-card"><div class="month-picker-head"><h2 id="monthPickerTitle">月を選択</h2><button type="button" class="month-picker-close" id="closeMonthPicker">×</button></div><div class="month-picker-label" id="monthPickerModeLabel">月</div><div class="month-picker-grid" id="monthPickerGrid"></div><button type="button" class="month-picker-confirm" id="confirmMonthPicker">決定</button></div></div>
   <div class="modal-backdrop hidden" id="studentPickerModal"><div class="student-picker"><div class="student-picker-head"><h2>生徒を追加</h2><button type="button" class="student-picker-close" id="closeStudentPicker">×</button></div><div class="student-picker-filters"><input id="studentPickerSearch" placeholder="生徒名で検索"><select id="studentPickerGrade"><option value="">学年すべて</option><option>小学1年</option><option>小学2年</option><option>小学3年</option><option>小学4年</option><option>小学5年</option><option>小学6年</option><option>中学1年</option><option>中学2年</option><option>中学3年</option><option>高校1年</option><option>高校2年</option><option>高校3年</option></select></div><div class="student-picker-list" id="studentPickerList"></div><button type="button" class="student-picker-confirm" id="confirmStudentPicker">決定</button></div></div>
   <div class="modal-backdrop hidden" id="confirmModal"><div class="confirm-card"><h2>削除の確認</h2><p id="confirmMessage">この項目を削除しますか？</p><div class="confirm-actions"><button type="button" class="confirm-cancel" id="confirmCancel">キャンセル</button><button type="button" class="confirm-ok" id="confirmOk">削除する</button></div></div></div>
   <div class="modal-backdrop hidden" id="monthlyDetailModal"><div class="monthly-detail-card"><div class="monthly-detail-head"><h2 id="monthlyDetailTitle">日別授業</h2><button type="button" class="monthly-detail-close" id="closeMonthlyDetail">×</button></div><div id="monthlyDetailBody"></div></div></div>
@@ -1018,6 +1019,7 @@
     let currentDate = new Date(2026, 8, 22);
     let calendarMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     let shiftMonthDate = new Date(2026, 8, 1);
+    let monthPickerMode = 'month';
     let monthlyDate = new Date(2026, 8, 1);
     let period = 'normal';
     let activeSlot = 'B';
@@ -1580,7 +1582,7 @@
     function renderShifts() {
       const year = shiftMonthDate.getFullYear(); const month = shiftMonthDate.getMonth();
       const holidays = { '2026-09-21': '敬老の日', '2026-09-22': '秋分の日' };
-      $('shiftMonthLabel').innerHTML = `<span>${year}年</span><span>${month + 1}月</span>`;
+      $('shiftMonthLabel').innerHTML = `<span data-shift-part="year">${year}年</span><span data-shift-part="month">${month + 1}月</span>`;
       const first = new Date(year, month, 1).getDay(); const total = new Date(year, month + 1, 0).getDate();
       $('shiftGrid').innerHTML = `${Array(first).fill('<div class="shift-cell empty"></div>').join('')}${Array.from({length: total}, (_, i) => { const day = i + 1; const date = new Date(year, month, day); const dayOfWeek = date.getDay(); const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`; const holiday = holidays[dateStr]; const lessonSlots = slotsForDate(date); const cellClass = holiday ? 'holiday' : dayOfWeek === 0 ? 'sunday' : dayOfWeek === 6 ? 'saturday' : ''; return `<div class="shift-cell ${cellClass}" data-shift-date="${dateStr}"><div class="shift-cell-top"><span class="shift-date">${day}${holiday ? `<span class="shift-holiday-name">${holiday}</span>` : ''}</span><small>${lessonSlots.length ? lessonSlots.join('') : '休み'}</small></div></div>`; }).join('')}`;
       const trailingCells = (7 - ($('shiftGrid').children.length % 7)) % 7;
@@ -1631,11 +1633,20 @@
       const sheet = `<div class="shift-print-title"><span>${year}年${month + 1}月</span></div><table class="shift-print-table"><thead><tr>${weekdays.map((day, index) => `<th class="${index === 0 ? 'sun' : index === 6 ? 'sat' : ''}">${day}</th>`).join('')}</tr></thead><tbody>${Array.from({length:padded.length / 7}, (_, index) => `<tr>${padded.slice(index * 7, index * 7 + 7).join('')}</tr>`).join('')}</tbody></table>`;
       printPreparedSheet(sheet, 'shift-print-sheet');
     }
-    function openMonthPicker() {
-      const selected = shiftMonthDate.getMonth();
-      $('monthPickerGrid').innerHTML = Array.from({ length: 12 }, (_, index) => `<button type="button" class="${index === selected ? 'active' : ''}" data-month-choice="${index}">${index + 1}月</button>`).join('');
+    function openMonthPicker(mode = 'month') {
+      monthPickerMode = mode;
+      const title = mode === 'year' ? '年を選択' : '月を選択';
+      $('monthPickerTitle').textContent = title;
+      $('monthPickerModeLabel').textContent = mode === 'year' ? '年' : '月';
+      if (mode === 'year') {
+        const currentYear = shiftMonthDate.getFullYear();
+        $('monthPickerGrid').innerHTML = Array.from({ length: 12 }, (_, index) => currentYear - 5 + index).map(year => `<button type="button" class="${year === currentYear ? 'active' : ''}" data-year-choice="${year}">${year}年</button>`).join('');
+      } else {
+        const selected = shiftMonthDate.getMonth();
+        $('monthPickerGrid').innerHTML = Array.from({ length: 12 }, (_, index) => `<button type="button" class="${index === selected ? 'active' : ''}" data-month-choice="${index}">${index + 1}月</button>`).join('');
+      }
       $('monthPickerModal').classList.remove('hidden');
-      $('monthPickerGrid').querySelectorAll('[data-month-choice]').forEach(button => button.addEventListener('click', () => {
+      $('monthPickerGrid').querySelectorAll('button').forEach(button => button.addEventListener('click', () => {
         $('monthPickerGrid').querySelectorAll('button').forEach(item => item.classList.remove('active'));
         button.classList.add('active');
       }));
@@ -2206,7 +2217,7 @@
       const slots = slotsForDay();
       if (!slots.includes(activeSlot)) activeSlot = slots[0] || '';
       const orderedSlots = activeSlot ? [activeSlot, ...slots.filter(slot => slot !== activeSlot)] : slots;
-      $('dateLabel').textContent = dateText(currentDate);
+      $('dateLabel').innerHTML = `<span class="date-year-part">${currentDate.getFullYear()}年</span><span>${currentDate.getMonth() + 1}月${currentDate.getDate()}日（${['日','月','火','水','木','金','土'][currentDate.getDay()]}）</span>`;
       $('datePicker').value = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
 
       $('slotTabs').innerHTML = slots.length ? slots.map(slot => `
@@ -2381,11 +2392,15 @@
     $('shiftNextMonth').addEventListener('click', () => { shiftMonthDate.setMonth(shiftMonthDate.getMonth() + 1); renderShifts(); });
     $('monthlyPrev').addEventListener('click', () => { monthlyDate.setMonth(monthlyDate.getMonth() - 1); renderMonthly(); });
     $('monthlyNext').addEventListener('click', () => { monthlyDate.setMonth(monthlyDate.getMonth() + 1); renderMonthly(); });
-    $('shiftMonthLabel').addEventListener('click', openMonthPicker);
+    $('shiftMonthLabel').addEventListener('click', event => { const part = event.target.closest('[data-shift-part]')?.dataset.shiftPart || 'month'; openMonthPicker(part === 'year' ? 'year' : 'month'); });
     $('closeMonthPicker').addEventListener('click', () => $('monthPickerModal').classList.add('hidden'));
     $('confirmMonthPicker').addEventListener('click', () => {
       const selected = $('monthPickerGrid').querySelector('.active');
-      if (selected) { shiftMonthDate.setMonth(Number(selected.dataset.monthChoice)); renderShifts(); }
+      if (selected) {
+        if (monthPickerMode === 'year' && selected.dataset.yearChoice) shiftMonthDate.setFullYear(Number(selected.dataset.yearChoice));
+        if (monthPickerMode === 'month' && selected.dataset.monthChoice) shiftMonthDate.setMonth(Number(selected.dataset.monthChoice));
+        renderShifts();
+      }
       $('monthPickerModal').classList.add('hidden');
     });
     $('closeShiftEdit').addEventListener('click', () => $('shiftEditModal').classList.add('hidden'));
