@@ -1,3 +1,4 @@
+// 既存のインストール済みPWAのキャッシュを引き継ぐため、内部名は変更しない
 const CACHE_NAME = 'manabijuku-v1';
 const APP_SHELL = ['./', './juku-admin-home.html', './manifest.webmanifest', './app-icon.svg'];
 

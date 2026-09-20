@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0b83c5">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="apple-touch-icon" href="./app-icon.svg">
-  <title>まなび塾｜管理者ホーム</title>
+  <title>生徒管理アプリ｜管理画面</title>
   <style>
     :root {
       --ink: #17283a;
@@ -919,9 +919,16 @@
       中学: ['国語', '数学', '社会', '理科', '英語'],
       高校: ['国語', '数学', '社会', '理科', '英語']
     };
-    let subjectsByLevel = JSON.parse(localStorage.getItem('jukuSubjectsByLevel') || JSON.stringify(defaultSubjectsByLevel));
-    let videoSubjects = JSON.parse(localStorage.getItem('jukuVideoSubjects') || JSON.stringify({ 小学:[], 中学:[], 高校:[] }));
-    let longBreaks = JSON.parse(localStorage.getItem('jukuLongBreaks') || '[]');
+    function readStoredJSON(key, fallback) {
+      try { const value = JSON.parse(localStorage.getItem(key) || 'null'); return value ?? fallback; }
+      catch (error) { console.warn(`保存データの読み込みに失敗しました: ${key}`, error); return fallback; }
+    }
+    const storedSubjectsByLevel = readStoredJSON('jukuSubjectsByLevel', defaultSubjectsByLevel);
+    const storedVideoSubjects = readStoredJSON('jukuVideoSubjects', { 小学:[], 中学:[], 高校:[] });
+    const storedLongBreaks = readStoredJSON('jukuLongBreaks', []);
+    let subjectsByLevel = Object.fromEntries(Object.entries(defaultSubjectsByLevel).map(([level, defaults]) => [level, Array.isArray(storedSubjectsByLevel[level]) && storedSubjectsByLevel[level].length ? storedSubjectsByLevel[level] : [...defaults]]));
+    let videoSubjects = Object.fromEntries(Object.keys(defaultSubjectsByLevel).map(level => [level, Array.isArray(storedVideoSubjects[level]) ? storedVideoSubjects[level] : []]));
+    let longBreaks = Array.isArray(storedLongBreaks) ? storedLongBreaks : [];
     let breakLessonRows = [{ day:'月', slot:'A', subject:'算数', video:false }];
     let breakMemberSelection = new Set();
     const defaultSkillLevels = () => Object.fromEntries(Object.entries(subjectsByLevel).map(([level, subjects]) => [level, Object.fromEntries(subjects.map(subject => [subject, 3]))]));
@@ -1332,8 +1339,8 @@
     function getMonthlySlotStudents(date, slot) { if (!date) return students[slot] || []; if (!monthlyAssignments[date]) monthlyAssignments[date] = {}; if (!monthlyAssignments[date][slot]) monthlyAssignments[date][slot] = []; return monthlyAssignments[date][slot]; }
     let submitSlot = 'B'; let submitChanged = false; let submitOriginal = '{}'; let submitDraft = {}; const submittedShifts = {}; let shiftEditDateKey = ''; const shiftAssignments = {};
     const shiftRequirementDefaults = { 月:{B:2,C:2,D:1}, 火:{B:2,C:2,D:1}, 水:{B:2,C:2,D:1}, 木:{B:2,C:2,D:1}, 金:{B:2,C:2,D:1}, 土:{S:1,A:1} };
-    let shiftRequirements = JSON.parse(localStorage.getItem('jukuShiftRequirements') || JSON.stringify(shiftRequirementDefaults));
-    let autoFillPeriod = JSON.parse(localStorage.getItem('jukuAutoFillPeriod') || 'null');
+    let shiftRequirements = readStoredJSON('jukuShiftRequirements', shiftRequirementDefaults);
+    let autoFillPeriod = readStoredJSON('jukuAutoFillPeriod', null);
     function autoFillMonthlyLessons(start, end) { if (!start || !end || start > end) return false; autoFillPeriod = { start, end }; localStorage.setItem('jukuAutoFillPeriod', JSON.stringify(autoFillPeriod)); autoAssignMonthlyStudents(); renderMonthly(); return true; }
     function saveShiftStaffRequirements() { document.querySelectorAll('.auto-requirement.active').forEach(button => { shiftRequirements[button.dataset.day][button.dataset.slot] = Number(button.dataset.count) || 0; }); localStorage.setItem('jukuShiftRequirements', JSON.stringify(shiftRequirements)); renderShifts(); persistFirebase(saveFirebaseShiftRequirements); }
     function orderedRequirementEntries(day, slots) { const order = day === '土' ? ['S','A'] : ['B','C','D']; return order.filter(slot => Object.prototype.hasOwnProperty.call(slots, slot)).map(slot => [slot, slots[slot]]); }

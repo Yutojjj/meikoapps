@@ -1,7 +1,7 @@
 {
-  "name": "まなび塾 管理",
-  "short_name": "まなび塾",
-  "description": "学習塾の授業・メンバー・シフト管理アプリ",
+  "name": "生徒管理アプリ",
+  "short_name": "生徒管理",
+  "description": "生徒・授業・シフトを管理するアプリ",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#fffdf7",
