@@ -162,18 +162,18 @@
     .auto-fill-day-row > label { grid-column:2; display:flex; align-items:center; justify-content:space-between; gap:8px; }
     @media (max-width:680px) { #autoFillSettings { grid-template-columns:1fr; } }
 
-    .shift-print-sheet { box-sizing:border-box; width:297mm; min-height:210mm; margin:auto; padding:14mm 13mm; color:#17283a; background:#fff; font-family:"Noto Sans JP",Meiryo,sans-serif; }
+    .shift-print-sheet { box-sizing:border-box; width:297mm; min-height:210mm; margin:auto; padding:14mm 13mm; color:#17283a; background:#fff; font-family:"Noto Sans JP",Meiryo,sans-serif; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     .shift-print-title { display:flex; justify-content:space-between; align-items:end; padding-bottom:5mm; border-bottom:2px solid #17283a; }
     .shift-print-title h1 { margin:0; font-size:22pt; } .shift-print-title span { font-size:13pt; font-weight:800; }
     .shift-print-table { width:100%; margin-top:7mm; border-collapse:collapse; table-layout:fixed; font-size:10pt; }
-    .shift-print-table th, .shift-print-table td { min-height:23mm; padding:3mm; border:1px solid #80909a; vertical-align:top; text-align:left; }
+    .shift-print-table th, .shift-print-table td { min-height:23mm; padding:2mm 1.5mm; border:1px solid #80909a; vertical-align:top; text-align:left; overflow:hidden; }
     .shift-print-table th { min-height:0; padding:2mm; text-align:center; background:#e6e6e6; }
     .shift-print-table th.sun, .shift-print-table td.sun { color:#c8323d; background:#fff0f1; }
     .shift-print-table th.sat, .shift-print-table td.sat { color:#146bc0; background:#edf6ff; }
     .shift-print-table th.holiday, .shift-print-table td.holiday { color:#c8323d; background:#fff0f1; }
-    .shift-print-date { display:flex; justify-content:space-between; margin-bottom:2.5mm; font-weight:900; }
-    .shift-print-staff { display:grid; gap:1.5mm; font-weight:800; line-height:1.35; }
-    .shift-print-member { display:flex; align-items:center; justify-content:space-between; gap:3mm; padding:1.4mm 2mm; color:#fff; background:var(--member-color,#5b9eb5); font-size:8.5pt; font-weight:900; white-space:nowrap; }
+    .shift-print-date { display:flex; justify-content:space-between; margin-bottom:1.5mm; font-weight:900; }
+    .shift-print-staff { display:grid; gap:0; width:100%; margin:0; font-weight:800; line-height:1.15; }
+    .shift-print-member { display:flex; align-items:center; justify-content:space-between; gap:2mm; width:100%; min-width:0; box-sizing:border-box; padding:1.1mm 1.5mm; color:#fff; background-color:var(--member-color,#5b9eb5); font-size:8pt; font-weight:900; line-height:1.1; white-space:nowrap; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     .shift-print-member strong { flex:0 0 auto; white-space:nowrap; }
     .shift-print-member span { flex:0 0 auto; font-size:8pt; letter-spacing:.08em; white-space:nowrap; }
     .shift-print-empty { color:#9aaab2; font-size:8pt; font-weight:800; }
@@ -582,6 +582,7 @@
       .quiz-print-controls { display:none !important; }
       .quiz-print-sheet { box-sizing:border-box !important; width:auto !important; min-height:0 !important; margin:0 !important; padding:0 !important; box-shadow:none !important; }
       .quiz-print-page { box-sizing:border-box !important; width:210mm !important; height:297mm !important; min-height:0 !important; margin:0 !important; padding:18mm 17mm !important; }.quiz-print-page + .quiz-print-page { margin:0 !important; border:0 !important; break-before:page; page-break-before:always; }
+      #printRoot, .shift-print-sheet, .shift-print-member { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
       .shift-print-sheet { width:297mm !important; min-height:210mm !important; margin:0 !important; box-shadow:none !important; }
     }
     .monthly-calendar { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); border:1px solid var(--line); background:#fff; }
@@ -1540,7 +1541,7 @@
       const holidays = { '2026-09-21': '敬老の日', '2026-09-22': '秋分の日' };
       const cells = Array.from({ length:total }, (_, index) => {
         const day = index + 1; const date = new Date(year, month, day); const key = dateKeyFor(date); const holiday = holidays[key]; const staff = (shiftAssignments[key] || []).filter(item => registeredStaffNames().includes(item.teacher));
-        const members = staff.length ? staff.map(item => `<div class="shift-print-member" style="--member-color:${teacherColor(item.teacher)};background:${teacherColor(item.teacher)}"><strong>${item.teacher}</strong><span>${(item.slots || []).filter(Boolean).join('')}</span></div>`).join('') : '<span class="shift-print-empty">―</span>';
+        const members = staff.length ? staff.map(item => { const color = teacherColor(item.teacher); return `<div class="shift-print-member" style="--member-color:${color};background-color:${color}"><strong>${item.teacher}</strong><span>${(item.slots || []).filter(Boolean).join('')}</span></div>`; }).join('') : '<span class="shift-print-empty">―</span>';
         const cellClass = holiday ? 'holiday' : date.getDay() === 0 ? 'sun' : date.getDay() === 6 ? 'sat' : '';
         return `<td class="${cellClass}"><div class="shift-print-date"><span>${day}（${weekdays[date.getDay()]}）</span></div><div class="shift-print-staff">${members}</div></td>`;
       });
