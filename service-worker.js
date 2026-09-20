@@ -1,5 +1,5 @@
 // 既存のインストール済みPWAのキャッシュを引き継ぐため、内部名は変更しない
-const CACHE_NAME = 'student-management-app-v2';
+const CACHE_NAME = 'student-management-app-v3';
 const APP_SHELL = ['./', './juku-admin-home.html', './manifest.webmanifest', './app-icon.svg'];
 
 self.addEventListener('install', event => {
